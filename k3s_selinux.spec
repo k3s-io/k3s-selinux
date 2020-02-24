@@ -2,15 +2,16 @@
 
 
 %define relabel_files() \
-mkdir -p /var/lib/cni \
-	/var/lib/rancher/k3s/data \
-	/var/run/flannel \
-	/var/run/k3s \
-	/var/lib/rancher/k3s/agent/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots \
-	/var/lib/rancher/k3s/agent/containerd/io.containerd.grpc.v1.cri/sandboxes; \
+mkdir -p /var/lib/cni; \
+mkdir -p /var/lib/kubelet/pods; \
+mkdir -p /var/lib/rancher/k3s/agent/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots; \
+mkdir -p /var/lib/rancher/k3s/data; \
+mkdir -p /var/run/flannel; \
+mkdir -p /var/run/k3s; \
 restorecon -R -i /etc/systemd/system/k3s.service; \
 restorecon -R -i /usr/lib/systemd/system/k3s.service; \
 restorecon -R /var/lib/cni; \
+restorecon -R /var/lib/kubelet; \
 restorecon -R /var/lib/rancher; \
 restorecon -R /var/run/k3s; \
 restorecon -R /var/run/flannel
@@ -61,7 +62,6 @@ if [ $1 -eq 0 ]; then
     semodule -n -r k3s
     if /usr/sbin/selinuxenabled ; then
        /usr/sbin/load_policy
-       %relabel_files
 
     fi;
 fi;
