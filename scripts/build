@@ -1,0 +1,29 @@
+#!/bin/bash
+set -e -x
+
+sha=${GITHUB_SHA:-unknown}
+sha=${sha:0:8}
+DEV_RELEASE=${DEV_RELEASE:-$sha}
+version_regex='s/^v([^-+]*).*$/\1/'
+release_regex='s/\+k3s/+/; s/\+/-/g; s/^[^-]*//; s/^--/dev-/; s/-+/./g; s/^\.+//; s/\.+$//; s/^$/1/;'
+
+if [[ "$GITHUB_REF" = refs/tags/* ]]; then
+    tag=${GITHUB_REF#refs/tags/}
+    version=$(sed -E -e "$version_regex" <<<"$tag")
+    release=$(sed -E -e "$release_regex" <<<"$tag")
+else
+    version=0
+    release="dev.$DEV_RELEASE"
+fi
+
+make -f /usr/share/selinux/devel/Makefile k3s.pp
+rpmbuild \
+    --define "k3s_selinux_version ${version}" \
+    --define "k3s_selinux_release ${release}" \
+    --define "_sourcedir $PWD" \
+    --define "_specdir $PWD" \
+    --define "_builddir $PWD" \
+    --define "_srcrpmdir $PWD" \
+    --define "_buildrootdir $PWD/.build" \
+    --define "_rpmdir ${PWD}/dist/rpm" \
+    -bb k3s-selinux.spec
