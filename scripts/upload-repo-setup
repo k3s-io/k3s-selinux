@@ -1,0 +1,7 @@
+#!/bin/bash
+set -e -x
+
+yum install -y epel-release
+yum install -y git python2-pip python-deltarpm
+pip install --cache-dir=/var/cache/pip/ \
+  git+git://github.com/Voronenko/rpm-s3.git@5695c6ad9a08548141d3713328e1bd3f533d137e

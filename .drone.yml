@@ -1,0 +1,60 @@
+---
+kind: pipeline
+name: RPM Build and Publish
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+- name: Build
+  image: centos:7
+  commands:
+  - scripts/build-setup
+  - scripts/build
+
+- name: Sign
+  image: centos:7
+  environment:
+    PRIVATE_KEY:
+      from_secret: private_key
+    PRIVATE_KEY_PASS_PHRASE:
+      from_secret: private_key_pass_phrase
+  commands:
+  - scripts/sign-setup
+  - scripts/sign
+
+- name: Yum Repo Upload
+  image: centos:7
+  environment:
+    AWS_S3_BUCKET:
+      from_secret: aws_s3_bucket
+    AWS_ACCESS_KEY_ID:
+      from_secret: aws_access_key_id
+    AWS_SECRET_ACCESS_KEY:
+      from_secret: aws_secret_access_key
+  commands:
+  - scripts/upload-repo-setup
+  - scripts/upload-repo
+
+- name: Github Asset Upload
+  image: ibuildthecloud/github-release:v0.0.1
+  settings:
+    api_key:
+      from_secret: github_token
+    prerelease: true
+    checksum:
+    - sha256
+    checksum_file: CHECKSUMsum-amd64.txt
+    checksum_flatten: true
+    files:
+    - "dist/rpm/noarch/*"
+
+trigger:
+  instance:
+    - drone-publish.rancher.io
+  ref:
+    - refs/head/master
+    - refs/tags/*
+  event:
+    - tag
