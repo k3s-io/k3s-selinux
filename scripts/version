@@ -1,0 +1,35 @@
+#!/bin/bash
+
+TREE_STATE=clean
+COMMIT=${COMMIT:-${DRONE_COMMIT:-${GITHUB_SHA:-unknown}}}
+if [[ "$GITHUB_REF" = refs/tags/* ]]; then
+    GITHUB_TAG=${GITHUB_REF#refs/tags/}
+fi
+TAG=${TAG:-${DRONE_TAG:-$GITHUB_TAG}}
+
+if [ -d .git ]; then
+    if [ -z "$TAG" ]; then
+        TAG=$(git tag -l --contains HEAD | head -n 1)
+    fi
+    if [ -n "$(git status --porcelain --untracked-files=no)" ]; then
+        DIRTY="-dirty"
+        TREE_STATE=dirty
+    fi
+
+    COMMIT=$(git log -n3 --pretty=format:"%H %ae" | grep -v ' drone@localhost$' | cut -f1 -d\  | head -1)
+    if [ -z "$COMMIT" ]; then
+        COMMIT=$(git rev-parse HEAD || true)
+    fi
+fi
+
+if [[ -n "$TAG" ]]; then
+    VERSION=$TAG
+else
+    VERSION="0+dev-${COMMIT:0:8}${DIRTY}"
+fi
+
+rpm_version_regex='s/^v?([^-+]*).*$/\1/;'
+rpm_release_regex='s/\+k3s/+/; s/\+/-/g; s/^[^-]*//; s/^--/dev-/; s/-+/./g; s/^\.+//; s/\.+$//; s/^$/1/;'
+
+RPM_VERSION=$(sed -E -e "$rpm_version_regex" <<<"$VERSION")
+RPM_RELEASE=$(sed -E -e "$rpm_release_regex" <<<"$VERSION")

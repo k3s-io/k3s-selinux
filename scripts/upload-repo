@@ -1,0 +1,9 @@
+#!/bin/bash
+set -e -x
+
+if [ -z "$AWS_S3_BUCKET" ]; then
+  echo "AWS_S3_BUCKET not defined, failing rpm upload"
+  exit 1
+fi
+
+rpm-s3 --bucket $AWS_S3_BUCKET dist/rpm/**/k3s-*.rpm

@@ -1,0 +1,18 @@
+#!/bin/bash
+set -e -x
+
+cd $(dirname $0)/..
+. ./scripts/version
+
+make -f /usr/share/selinux/devel/Makefile k3s.pp
+
+rpmbuild \
+    --define "k3s_selinux_version ${RPM_VERSION}" \
+    --define "k3s_selinux_release ${RPM_RELEASE}" \
+    --define "_sourcedir $PWD" \
+    --define "_specdir $PWD" \
+    --define "_builddir $PWD" \
+    --define "_srcrpmdir $PWD" \
+    --define "_buildrootdir $PWD/.build" \
+    --define "_rpmdir ${PWD}/dist/rpm" \
+    -bb k3s-selinux.spec
