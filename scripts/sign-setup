@@ -1,4 +1,4 @@
 #!/bin/bash
 set -e -x
 
-yum install -y rpm-sign expect
+yum install -y rpm-sign expect git

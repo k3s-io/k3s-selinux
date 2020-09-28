@@ -20,6 +20,10 @@ steps:
       from_secret: private_key
     PRIVATE_KEY_PASS_PHRASE:
       from_secret: private_key_pass_phrase
+    TESTING_PRIVATE_KEY:
+      from_secret: testing_private_key
+    TESTING_PRIVATE_KEY_PASS_PHRASE:
+      from_secret: testing_private_key_pass_phrase
   commands:
   - scripts/sign-setup
   - scripts/sign
@@ -29,10 +33,16 @@ steps:
   environment:
     AWS_S3_BUCKET:
       from_secret: aws_s3_bucket
+    TESTING_AWS_S3_BUCKET:
+      from_secret: testing_aws_s3_bucket
     AWS_ACCESS_KEY_ID:
       from_secret: aws_access_key_id
     AWS_SECRET_ACCESS_KEY:
       from_secret: aws_secret_access_key
+    TESTING_AWS_ACCESS_KEY_ID:
+      from_secret: testing_aws_access_key_id
+    TESTING_AWS_SECRET_ACCESS_KEY:
+      from_secret: testing_aws_secret_access_key
   commands:
   - scripts/upload-repo-setup
   - scripts/upload-repo
@@ -49,6 +59,7 @@ steps:
     checksum_flatten: true
     files:
     - "dist/rpm/noarch/*"
+    - "dist/source/*"
 
 trigger:
   instance:
