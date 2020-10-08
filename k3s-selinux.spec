@@ -22,7 +22,7 @@ restorecon -R /var/run/flannel
 
 Name:   k3s-selinux
 Version:	%{k3s_selinux_version}
-Release:	%{k3s_selinux_release}%{?dist}
+Release:	%{k3s_selinux_release}.el7_8
 Summary:	SELinux policy module for k3s
 
 Group:	System Environment/Base		
