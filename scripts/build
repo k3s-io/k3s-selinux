@@ -12,7 +12,7 @@ rpmbuild \
     --define "_sourcedir $PWD" \
     --define "_specdir $PWD" \
     --define "_builddir $PWD" \
-    --define "_srcrpmdir $PWD" \
+    --define "_srcrpmdir ${PWD}/dist/source" \
     --define "_buildrootdir $PWD/.build" \
     --define "_rpmdir ${PWD}/dist/rpm" \
-    -bb k3s-selinux.spec
+    -ba k3s-selinux.spec
