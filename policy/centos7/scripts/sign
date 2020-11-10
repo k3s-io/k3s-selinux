@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e -x
 
+yum install -y rpm-sign expect git
+
 pushd $(dirname $0)/..
 . ./scripts/version
 popd
@@ -34,17 +36,7 @@ esac
 
 expect <<EOF
 set timeout 60
-spawn sh -c "rpmsign --addsign dist/rpm/**/k3s-*.rpm"
-expect "Enter pass phrase:"
-send -- "$PRIVATE_KEY_PASS_PHRASE\r"
-expect eof
-lassign [wait] _ _ _ code
-exit \$code
-EOF
-
-expect <<EOF
-set timeout 60
-spawn sh -c "rpmsign --addsign dist/source/k3s-*src.rpm"
+spawn sh -c "rpmsign --addsign dist/centos7/**/k3s-*.rpm"
 expect "Enter pass phrase:"
 send -- "$PRIVATE_KEY_PASS_PHRASE\r"
 expect eof

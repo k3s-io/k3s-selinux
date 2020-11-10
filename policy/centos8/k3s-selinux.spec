@@ -18,11 +18,11 @@ restorecon -R /var/run/flannel
 
 
 %define selinux_policyver 3.13.1-252
-%define container_policyver 2.107-3
+%define container_policyver 2.124.0-1
 
 Name:   k3s-selinux
 Version:	%{k3s_selinux_version}
-Release:	%{k3s_selinux_release}.el7_8
+Release:	%{k3s_selinux_release}.el8
 Summary:	SELinux policy module for k3s
 
 Group:	System Environment/Base		

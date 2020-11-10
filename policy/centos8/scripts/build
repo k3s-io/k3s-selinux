@@ -14,5 +14,8 @@ rpmbuild \
     --define "_builddir $PWD" \
     --define "_srcrpmdir ${PWD}/dist/source" \
     --define "_buildrootdir $PWD/.build" \
-    --define "_rpmdir ${PWD}/dist/rpm" \
+    --define "_rpmdir ${PWD}/dist" \
     -ba k3s-selinux.spec
+
+mkdir -p /source/dist/centos8
+cp -r dist/* /source/dist/centos8

@@ -4,7 +4,8 @@ TREE_STATE=clean
 COMMIT=${COMMIT:-${DRONE_COMMIT:-${GITHUB_SHA:-unknown}}}
 TAG=${TAG:-${DRONE_TAG:-$GITHUB_TAG}}
 
-if [ -d .git ]; then
+if [ -d ${DAPPER_SOURCE}/.git ]; then
+    pushd ${DAPPER_SOURCE}
     if [ -n "$(git status --porcelain --untracked-files=no)" ]; then
         DIRTY="dirty"
         TREE_STATE=dirty
@@ -18,6 +19,7 @@ if [ -d .git ]; then
     if [ -z "$COMMIT" ]; then
         COMMIT=$(git rev-parse HEAD || true)
     fi
+    popd
 fi
 
 if [[ -n "$TAG" ]]; then
