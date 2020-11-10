@@ -35,6 +35,9 @@ Source1:	k3s.if
 Requires: policycoreutils, libselinux-utils
 Requires(post): selinux-policy-base >= %{selinux_policyver}, policycoreutils, container-selinux >= %{container_policyver}
 Requires(postun): policycoreutils
+
+Conflicts: rke2-selinux
+
 BuildArch: noarch
 
 %description
