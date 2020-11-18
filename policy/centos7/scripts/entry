@@ -1,0 +1,12 @@
+#!/bin/sh
+set -ex
+
+if [ -e ./policy/centos7/scripts/"$1" ]; then
+    ./policy/centos7/scripts/"$@"
+else
+    exec "$@"
+fi
+
+if [ "$DAPPER_UID" -ne "-1" ]; then
+  chown -R $DAPPER_UID:$DAPPER_GID .
+fi

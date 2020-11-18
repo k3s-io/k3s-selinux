@@ -1,19 +1,21 @@
 ---
 kind: pipeline
-name: RPM Build and Publish
+name: RPM Build EL7
 
 platform:
   os: linux
   arch: amd64
 
 steps:
-- name: Build
-  image: centos:7
+- name: Build EL7
+  image: rancher/dapper:v0.5.0
   commands:
-  - scripts/build-setup
-  - scripts/build
+  - dapper -f Dockerfile.centos7.dapper policy/centos7/scripts/build
+  volumes:
+  - name: docker
+    path: /var/run/docker.sock
 
-- name: Sign
+- name: Sign RPM EL7
   image: centos:7
   environment:
     PRIVATE_KEY:
@@ -25,29 +27,43 @@ steps:
     TESTING_PRIVATE_KEY_PASS_PHRASE:
       from_secret: testing_private_key_pass_phrase
   commands:
-  - scripts/sign-setup
-  - scripts/sign
+  - policy/centos7/scripts/sign
+  when:
+    instance:
+    - drone-publish.rancher.io
+    ref:
+    - refs/head/master
+    - refs/tags/*
+    event:
+    - tag
 
-- name: Yum Repo Upload
+- name: Yum Repo Upload EL7
   image: centos:7
   environment:
     AWS_S3_BUCKET:
       from_secret: aws_s3_bucket
-    TESTING_AWS_S3_BUCKET:
-      from_secret: testing_aws_s3_bucket
     AWS_ACCESS_KEY_ID:
       from_secret: aws_access_key_id
     AWS_SECRET_ACCESS_KEY:
       from_secret: aws_secret_access_key
+    TESTING_AWS_S3_BUCKET:
+      from_secret: testing_aws_s3_bucket
     TESTING_AWS_ACCESS_KEY_ID:
       from_secret: testing_aws_access_key_id
     TESTING_AWS_SECRET_ACCESS_KEY:
       from_secret: testing_aws_secret_access_key
   commands:
-  - scripts/upload-repo-setup
-  - scripts/upload-repo
+  - policy/centos7/scripts/upload-repo
+  when:
+    instance:
+    - drone-publish.rancher.io
+    ref:
+    - refs/head/master
+    - refs/tags/*
+    event:
+    - tag
 
-- name: Github Asset Upload
+- name: GitHub Release EL7
   image: ibuildthecloud/github-release:v0.0.1
   settings:
     api_key:
@@ -55,17 +71,110 @@ steps:
     prerelease: true
     checksum:
     - sha256
-    checksum_file: CHECKSUMsum-amd64.txt
+    checksum_file: CHECKSUMsum-centos7-noarch.txt
     checksum_flatten: true
     files:
-    - "dist/rpm/noarch/*"
-    - "dist/source/*"
-
-trigger:
-  instance:
+    - "dist/centos7/**/*.rpm"
+  when:
+    instance:
     - drone-publish.rancher.io
-  ref:
+    ref:
     - refs/head/master
     - refs/tags/*
-  event:
+    event:
     - tag
+
+volumes:
+- name: docker
+  host:
+    path: /var/run/docker.sock
+---
+kind: pipeline
+name: RPM Build EL8
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+- name: Build EL8
+  image: rancher/dapper:v0.5.0
+  commands:
+  - dapper -f Dockerfile.centos8.dapper policy/centos8/scripts/build
+  volumes:
+  - name: docker
+    path: /var/run/docker.sock
+
+- name: Sign RPM EL8
+  image: centos:7
+  environment:
+    PRIVATE_KEY:
+      from_secret: private_key
+    PRIVATE_KEY_PASS_PHRASE:
+      from_secret: private_key_pass_phrase
+    TESTING_PRIVATE_KEY:
+      from_secret: testing_private_key
+    TESTING_PRIVATE_KEY_PASS_PHRASE:
+      from_secret: testing_private_key_pass_phrase
+  commands:
+  - policy/centos8/scripts/sign
+  when:
+    instance:
+    - drone-publish.rancher.io
+    ref:
+    - refs/head/master
+    - refs/tags/*
+    event:
+    - tag
+
+- name: Yum Repo Upload EL8
+  image: centos:7
+  environment:
+    AWS_S3_BUCKET:
+      from_secret: aws_s3_bucket
+    AWS_ACCESS_KEY_ID:
+      from_secret: aws_access_key_id
+    AWS_SECRET_ACCESS_KEY:
+      from_secret: aws_secret_access_key
+    TESTING_AWS_S3_BUCKET:
+      from_secret: testing_aws_s3_bucket
+    TESTING_AWS_ACCESS_KEY_ID:
+      from_secret: testing_aws_access_key_id
+    TESTING_AWS_SECRET_ACCESS_KEY:
+      from_secret: testing_aws_secret_access_key
+  commands:
+  - policy/centos8/scripts/upload-repo
+  when:
+    instance:
+    - drone-publish.rancher.io
+    ref:
+    - refs/head/master
+    - refs/tags/*
+    event:
+    - tag
+
+- name: GitHub Release EL8
+  image: ibuildthecloud/github-release:v0.0.1
+  settings:
+    api_key:
+      from_secret: github_token
+    prerelease: true
+    checksum:
+    - sha256
+    checksum_file: CHECKSUMsum-centos8-noarch.txt
+    checksum_flatten: true
+    files:
+    - "dist/centos8/**/*.rpm"
+  when:
+    instance:
+    - drone-publish.rancher.io
+    ref:
+    - refs/head/master
+    - refs/tags/*
+    event:
+    - tag
+
+volumes:
+- name: docker
+  host:
+    path: /var/run/docker.sock

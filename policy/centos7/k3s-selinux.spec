@@ -22,7 +22,7 @@ restorecon -R /var/run/flannel
 
 Name:   k3s-selinux
 Version:	%{k3s_selinux_version}
-Release:	%{k3s_selinux_release}.el7_8
+Release:	%{k3s_selinux_release}.el7
 Summary:	SELinux policy module for k3s
 
 Group:	System Environment/Base		
@@ -35,6 +35,9 @@ Source1:	k3s.if
 Requires: policycoreutils, libselinux-utils
 Requires(post): selinux-policy-base >= %{selinux_policyver}, policycoreutils, container-selinux >= %{container_policyver}
 Requires(postun): policycoreutils
+
+Conflicts: rke2-selinux
+
 BuildArch: noarch
 
 %description
