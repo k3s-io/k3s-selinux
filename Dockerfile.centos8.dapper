@@ -8,4 +8,4 @@ ENV DAPPER_ENV COMBARCH DRONE_TAG TAG
 ENV HOME ${DAPPER_SOURCE}
 WORKDIR ${DAPPER_SOURCE}
 
-ENTRYPOINT ["./policy/centos8/scripts/entry"]
+ENTRYPOINT ["./policy/scripts/entry"]

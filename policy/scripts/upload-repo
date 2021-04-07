@@ -10,13 +10,15 @@ yum install -y git python2-pip python-deltarpm
 pip install --cache-dir=/var/cache/pip/ \
   git+git://github.com/Voronenko/rpm-s3.git@5695c6ad9a08548141d3713328e1bd3f533d137e
 
+EL_VERSION=$(rpm --eval '%rhel')
+
 if [ -z "$RPM_CHANNEL" ]; then
   echo "RPM_CHANNEL not defined, failing rpm upload"
   exit 1
 fi
 
-TARGET_EL7_S3_PATH="k3s/$RPM_CHANNEL/common/centos/7/noarch"
-TARGET_EL7_SOURCE_S3_PATH="k3s/$RPM_CHANNEL/common/centos/7/source"
+TARGET_EL_S3_PATH="k3s/$RPM_CHANNEL/common/centos/$EL_VERSION/noarch"
+TARGET_EL_SOURCE_S3_PATH="k3s/$RPM_CHANNEL/common/centos/$EL_VERSION/source"
 
 case "$RPM_CHANNEL" in
   "testing")
@@ -56,5 +58,5 @@ case "$RPM_CHANNEL" in
     ;;
 esac
 
-rpm-s3 --bucket $AWS_S3_BUCKET -p $TARGET_EL7_S3_PATH --keep 100000 dist/centos7/noarch/k3s-*.rpm
-rpm-s3 --bucket $AWS_S3_BUCKET -p $TARGET_EL7_SOURCE_S3_PATH --keep 100000 dist/centos7/source/k3s-*src.rpm
+rpm-s3 --bucket $AWS_S3_BUCKET -p $TARGET_EL_S3_PATH --keep 100000 "dist/centos$EL_VERSION/noarch/k3s-*.rpm"
+rpm-s3 --bucket $AWS_S3_BUCKET -p $TARGET_EL_SOURCE_S3_PATH --keep 100000 "dist/centos$EL_VERSION/source/k3s-*src.rpm"

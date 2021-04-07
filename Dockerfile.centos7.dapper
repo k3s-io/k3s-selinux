@@ -1,6 +1,6 @@
 FROM centos:7
 
-RUN yum install -y epel-release && yum -y install container-selinux selinux-policy-devel yum-utils rpm-build git jq 
+RUN yum install -y epel-release && yum -y install container-selinux selinux-policy-devel yum-utils rpm-build git jq
 
 ENV DAPPER_SOURCE /source
 ENV DAPPER_OUTPUT ./dist
@@ -8,4 +8,4 @@ ENV DAPPER_ENV COMBARCH DRONE_TAG TAG
 ENV HOME ${DAPPER_SOURCE}
 WORKDIR ${DAPPER_SOURCE}
 
-ENTRYPOINT ["./policy/centos7/scripts/entry"]
+ENTRYPOINT ["./policy/scripts/entry"]

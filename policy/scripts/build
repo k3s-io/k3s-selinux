@@ -17,5 +17,5 @@ rpmbuild \
     --define "_rpmdir ${PWD}/dist" \
     -ba k3s-selinux.spec
 
-mkdir -p /source/dist/centos8
-cp -r dist/* /source/dist/centos8
+mkdir -p /source/dist/centos$(rpm --eval '%rhel')
+cp -r dist/* /source/dist/centos$(rpm --eval '%rhel')

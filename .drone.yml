@@ -10,7 +10,7 @@ steps:
 - name: Build EL7
   image: rancher/dapper:v0.5.0
   commands:
-  - dapper -f Dockerfile.centos7.dapper policy/centos7/scripts/build
+  - dapper -f Dockerfile.centos7.dapper policy/scripts/build
   volumes:
   - name: docker
     path: /var/run/docker.sock
@@ -27,7 +27,7 @@ steps:
     TESTING_PRIVATE_KEY_PASS_PHRASE:
       from_secret: testing_private_key_pass_phrase
   commands:
-  - policy/centos7/scripts/sign
+  - policy/scripts/sign
   when:
     instance:
     - drone-publish.k3s.io
@@ -53,7 +53,7 @@ steps:
     TESTING_AWS_SECRET_ACCESS_KEY:
       from_secret: testing_aws_secret_access_key
   commands:
-  - policy/centos7/scripts/upload-repo
+  - policy/scripts/upload-repo
   when:
     instance:
     - drone-publish.k3s.io
@@ -100,7 +100,7 @@ steps:
 - name: Build EL8
   image: rancher/dapper:v0.5.0
   commands:
-  - dapper -f Dockerfile.centos8.dapper policy/centos8/scripts/build
+  - dapper -f Dockerfile.centos8.dapper policy/scripts/build
   volumes:
   - name: docker
     path: /var/run/docker.sock
@@ -117,7 +117,7 @@ steps:
     TESTING_PRIVATE_KEY_PASS_PHRASE:
       from_secret: testing_private_key_pass_phrase
   commands:
-  - policy/centos8/scripts/sign
+  - policy/scripts/sign
   when:
     instance:
     - drone-publish.k3s.io
@@ -143,7 +143,7 @@ steps:
     TESTING_AWS_SECRET_ACCESS_KEY:
       from_secret: testing_aws_secret_access_key
   commands:
-  - policy/centos8/scripts/upload-repo
+  - policy/scripts/upload-repo
   when:
     instance:
     - drone-publish.k3s.io

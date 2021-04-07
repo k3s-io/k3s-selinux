@@ -1,5 +1,5 @@
-CENTOS7_TARGETS := $(addprefix centos7-,$(shell ls policy/centos7/scripts))
-CENTOS8_TARGETS := $(addprefix centos8-,$(shell ls policy/centos8/scripts))
+CENTOS7_TARGETS := $(addprefix centos7-,$(shell ls policy/scripts))
+CENTOS8_TARGETS := $(addprefix centos8-,$(shell ls policy/scripts))
 
 .dapper:
 	@echo Downloading dapper
