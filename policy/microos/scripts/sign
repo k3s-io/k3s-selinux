@@ -1,0 +1,45 @@
+#!/bin/bash
+set -e -x
+
+yum install -y rpm-sign expect git
+
+pushd $(dirname $0)/..
+. ./scripts/version
+popd
+
+cat <<\EOF >~/.rpmmacros 
+%_signature gpg
+%_gpg_name ci@rancher.com
+EOF
+
+case "$RPM_CHANNEL" in
+  "testing")
+    export PRIVATE_KEY_PASS_PHRASE=$TESTING_PRIVATE_KEY_PASS_PHRASE
+    if ! grep "BEGIN PGP PRIVATE KEY BLOCK" <<<"$TESTING_PRIVATE_KEY"; then
+      echo "TESTING_PRIVATE_KEY not defined, failing rpm sign"
+      exit 1
+    fi
+    gpg --import - <<<"$TESTING_PRIVATE_KEY"
+    ;;
+  "latest"|"stable")
+    if ! grep "BEGIN PGP PRIVATE KEY BLOCK" <<<"$PRIVATE_KEY"; then
+      echo "PRIVATE_KEY not defined, failing rpm sign"
+      exit 1
+    fi
+    gpg --import - <<<"$PRIVATE_KEY"
+    ;;
+  *)
+    echo "RPM_CHANNEL $RPM_CHANNEL does not match one of: [testing, latest, stable]"
+    exit 1
+    ;;
+esac
+
+expect <<EOF
+set timeout 60
+spawn sh -c "rpmsign --addsign dist/microos/**/k3s-*.rpm"
+expect "Enter pass phrase:"
+send -- "$PRIVATE_KEY_PASS_PHRASE\r"
+expect eof
+lassign [wait] _ _ _ code
+exit \$code
+EOF

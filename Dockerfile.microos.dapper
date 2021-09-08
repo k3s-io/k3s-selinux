@@ -1,0 +1,11 @@
+FROM opensuse/tumbleweed
+
+RUN zypper install -y container-selinux selinux-policy-devel rpm-build git jq
+
+ENV DAPPER_SOURCE /source
+ENV DAPPER_OUTPUT ./dist
+ENV DAPPER_ENV COMBARCH DRONE_TAG TAG
+ENV HOME ${DAPPER_SOURCE}
+WORKDIR ${DAPPER_SOURCE}
+
+ENTRYPOINT ["./policy/microos/scripts/entry"]
