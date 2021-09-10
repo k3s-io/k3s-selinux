@@ -54,7 +54,7 @@ install -d %{buildroot}/etc/selinux/targeted/contexts/users/
 %selinux_relabel_pre
 
 %post
-%selinux_modules_install %{_datadir}/selinux/packages/k3s.pp || true
+%selinux_modules_install %{_datadir}/selinux/packages/k3s.pp
 if /usr/sbin/selinuxenabled ; then
     /usr/sbin/load_policy
     %k3s_relabel_files
