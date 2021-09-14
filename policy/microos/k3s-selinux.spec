@@ -59,13 +59,11 @@ if /usr/sbin/selinuxenabled ; then
     /usr/sbin/load_policy
     %k3s_relabel_files
 fi;
-exit 0
 
 %postun
 if [ $1 -eq 0 ]; then
     %selinux_modules_uninstall k3s
 fi;
-exit 0
 
 %posttrans
 %selinux_relabel_post
