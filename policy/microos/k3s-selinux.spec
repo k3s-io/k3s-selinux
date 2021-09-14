@@ -1,7 +1,7 @@
 # vim: sw=4:ts=4:et
 
 
-%define relabel_files() \
+%define k3s_relabel_files() \
 mkdir -p /var/lib/cni; \
 mkdir -p /var/lib/kubelet/pods; \
 mkdir -p /var/lib/rancher/k3s/agent/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots; \
@@ -18,7 +18,7 @@ restorecon -R /var/run/flannel
 
 
 %define selinux_policyver 20210716-3.1
-%define container_policyver 2.164.2-1.1
+%define container_policyver 2.160.1-0
 
 Name:   k3s-selinux
 Version:	%{k3s_selinux_version}
@@ -58,19 +58,17 @@ install -d %{buildroot}/etc/selinux/targeted/contexts/users/
 if /usr/sbin/selinuxenabled ; then
     /usr/sbin/load_policy
     %k3s_relabel_files
-
 fi;
-%selinux_relabel_post
+exit 0
+
+%postun
+if [ $1 -eq 0 ]; then
+    %selinux_modules_uninstall k3s
+fi;
+exit 0
 
 %posttrans
 %selinux_relabel_post
-
-%postun
-%selinux_modules_uninstall k3s
-if [ $1 -eq 0 ]; then
-    %selinux_relabel_post
-fi;
-exit 0
 
 %files
 %attr(0600,root,root) %{_datadir}/selinux/packages/k3s.pp

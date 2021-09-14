@@ -17,5 +17,8 @@ rpmbuild \
     --define "_rpmdir ${PWD}/dist" \
     -ba k3s-selinux.spec
 
+#zypper install -y --allow-unsigned-rpm dist/noarch/*.rpm
+#semodule --disable k3s
+#zypper remove k3s-selinux
 mkdir -p /source/dist/microos
 cp -r dist/* /source/dist/microos

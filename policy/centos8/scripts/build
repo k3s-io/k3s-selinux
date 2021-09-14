@@ -17,5 +17,8 @@ rpmbuild \
     --define "_rpmdir ${PWD}/dist" \
     -ba k3s-selinux.spec
 
+#dnf install -y dist/noarch/k3s-selinux-*.rpm
+#semodule --disable k3s
+#dnf remove k3s-selinux
 mkdir -p /source/dist/centos8
 cp -r dist/* /source/dist/centos8
