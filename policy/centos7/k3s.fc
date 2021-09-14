@@ -1,8 +1,10 @@
 # vim: sw=8:ts=8:et
 
 /etc/systemd/system/k3s.*                                       --  gen_context(system_u:object_r:container_unit_file_t,s0)
-/usr(/local)?/lib/systemd/system/k3s.*                          --  gen_context(system_u:object_r:container_unit_file_t,s0)
-/usr(/local)?/s?bin/k3s                                         --  gen_context(system_u:object_r:container_runtime_exec_t,s0)
+/usr/lib/systemd/system/k3s.*                                   --  gen_context(system_u:object_r:container_unit_file_t,s0)
+/usr/local/lib/systemd/system/k3s.*                             --  gen_context(system_u:object_r:container_unit_file_t,s0)
+/usr/local/s?bin/k3s                                            --  gen_context(system_u:object_r:container_runtime_exec_t,s0)
+/usr/s?bin/k3s                                                  --  gen_context(system_u:object_r:container_runtime_exec_t,s0)
 /var/lib/cni(/.*)?                                                  gen_context(system_u:object_r:container_var_lib_t,s0)
 /var/lib/kubelet/pods(/.*)?                                         gen_context(system_u:object_r:container_file_t,s0)
 /var/lib/rancher/k3s(/.*)?                                          gen_context(system_u:object_r:container_var_lib_t,s0)
