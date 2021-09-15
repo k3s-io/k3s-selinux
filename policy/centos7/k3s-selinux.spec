@@ -31,17 +31,20 @@ URL:		http://k3s.io
 Source0:	k3s.pp
 Source1:	k3s.if
 
+BuildArch: noarch
+BuildRequires: container-selinux >= %{container_policyver}
+BuildRequires: container-selinux < 2:2.164.2
+BuildRequires: git
+BuildRequires: selinux-policy-devel
 
 Requires: policycoreutils, libselinux-utils
-Requires(post): selinux-policy-base >= %{selinux_policyver}, policycoreutils, container-selinux >= %{container_policyver}
+Requires(post): selinux-policy-base >= %{selinux_policyver}, policycoreutils, container-selinux >= %{container_policyver}, container-selinux < 2:2.164.2
 Requires(postun): policycoreutils
 
 Conflicts: rke2-selinux
 
-BuildArch: noarch
-
 %description
-This package installs and sets up the  SELinux policy security module for k3s.
+This package installs and sets up the SELinux policy security module for k3s.
 
 %install
 install -d %{buildroot}%{_datadir}/selinux/packages
@@ -62,7 +65,7 @@ fi;
 
 %postun
 if [ $1 -eq 0 ]; then
-%selinux_modules_uninstall k3s
+    %selinux_modules_uninstall k3s
 fi;
 
 %posttrans

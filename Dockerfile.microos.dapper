@@ -1,16 +1,11 @@
 ARG TUMBLEWEED=opensuse/tumbleweed
 FROM ${TUMBLEWEED}
-RUN zypper install -y --allow-unsigned-rpm git jq rpm-build selinux-policy-devel
+RUN zypper install -y container-selinux git rpm-build selinux-policy-devel
 
 ENV DAPPER_SOURCE /source
 ENV DAPPER_OUTPUT ./dist
 ENV DAPPER_ENV COMBARCH DRONE_TAG TAG
 ENV HOME ${DAPPER_SOURCE}
 WORKDIR ${DAPPER_SOURCE}
-
-VOLUME /var/lib/selinux/targeted
-
-ADD "https://github.com/dweomer/container-selinux/releases/download/v2.164.1/container-selinux-2.164.1-0.sle.noarch.rpm" /container-selinux.rpm
-RUN zypper install -y --allow-unsigned-rpm /container-selinux.rpm
 
 ENTRYPOINT ["./policy/microos/scripts/entry"]

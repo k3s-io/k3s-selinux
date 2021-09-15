@@ -18,7 +18,7 @@ restorecon -R /var/run/flannel
 
 
 %define selinux_policyver 20210716-3.1
-%define container_policyver 2.160.1-0
+%define container_policyver 2.164.2-1.1
 
 Name:   k3s-selinux
 Version:	%{k3s_selinux_version}
@@ -31,6 +31,11 @@ URL:		http://k3s.io
 Source0:	k3s.pp
 Source1:	k3s.if
 
+BuildArch: noarch
+BuildRequires: container-selinux >= %{container_policyver}
+BuildRequires: container-selinux < 2:2.164.2
+BuildRequires: git
+BuildRequires: selinux-policy-devel
 
 Requires: policycoreutils, selinux-tools
 Requires(post): selinux-policy-base >= %{selinux_policyver}, policycoreutils, container-selinux >= %{container_policyver}
@@ -38,10 +43,8 @@ Requires(postun): policycoreutils
 
 Conflicts: rke2-selinux
 
-BuildArch: noarch
-
 %description
-This package installs and sets up the  SELinux policy security module for k3s.
+This package installs and sets up the SELinux policy security module for k3s.
 
 %install
 install -d %{buildroot}%{_datadir}/selinux/packages
