@@ -178,3 +178,93 @@ volumes:
 - name: docker
   host:
     path: /var/run/docker.sock
+---
+kind: pipeline
+name: RPM Build SLE
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+- name: Build SLE
+  image: rancher/dapper:v0.5.0
+  commands:
+  - dapper -f Dockerfile.microos.dapper policy/microos/scripts/build
+  volumes:
+  - name: docker
+    path: /var/run/docker.sock
+
+- name: Sign RPM SLE
+  image: centos:7
+  environment:
+    PRIVATE_KEY:
+      from_secret: private_key
+    PRIVATE_KEY_PASS_PHRASE:
+      from_secret: private_key_pass_phrase
+    TESTING_PRIVATE_KEY:
+      from_secret: testing_private_key
+    TESTING_PRIVATE_KEY_PASS_PHRASE:
+      from_secret: testing_private_key_pass_phrase
+  commands:
+  - policy/microos/scripts/sign
+  when:
+    instance:
+    - drone-publish.k3s.io
+    ref:
+    - refs/head/master
+    - refs/tags/*
+    event:
+    - tag
+
+- name: Yum Repo Upload SLE
+  image: centos:7
+  environment:
+    AWS_S3_BUCKET:
+      from_secret: aws_s3_bucket
+    AWS_ACCESS_KEY_ID:
+      from_secret: aws_access_key_id
+    AWS_SECRET_ACCESS_KEY:
+      from_secret: aws_secret_access_key
+    TESTING_AWS_S3_BUCKET:
+      from_secret: testing_aws_s3_bucket
+    TESTING_AWS_ACCESS_KEY_ID:
+      from_secret: testing_aws_access_key_id
+    TESTING_AWS_SECRET_ACCESS_KEY:
+      from_secret: testing_aws_secret_access_key
+  commands:
+  - policy/microos/scripts/upload-repo
+  when:
+    instance:
+    - drone-publish.k3s.io
+    ref:
+    - refs/head/master
+    - refs/tags/*
+    event:
+    - tag
+
+- name: GitHub Release SLE
+  image: ibuildthecloud/github-release:v0.0.1
+  settings:
+    api_key:
+      from_secret: github_token
+    prerelease: true
+    checksum:
+    - sha256
+    checksum_file: CHECKSUMsum-microos-noarch.txt
+    checksum_flatten: true
+    files:
+    - "dist/microos/**/*.rpm"
+  when:
+    instance:
+    - drone-publish.k3s.io
+    ref:
+    - refs/head/master
+    - refs/tags/*
+    event:
+    - tag
+
+volumes:
+- name: docker
+  host:
+    path: /var/run/docker.sock
