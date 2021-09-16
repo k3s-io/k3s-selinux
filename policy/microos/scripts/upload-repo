@@ -1,0 +1,60 @@
+#!/bin/bash
+set -e -x
+
+pushd $(dirname $0)/..
+. ./scripts/version
+popd
+
+yum install -y epel-release
+yum install -y git python2-pip python-deltarpm
+pip install --cache-dir=/var/cache/pip/ \
+  git+git://github.com/Voronenko/rpm-s3.git@5695c6ad9a08548141d3713328e1bd3f533d137e
+
+if [ -z "$RPM_CHANNEL" ]; then
+  echo "RPM_CHANNEL not defined, failing rpm upload"
+  exit 1
+fi
+
+TARGET_SLE_S3_PATH="k3s/$RPM_CHANNEL/common/microos/noarch"
+TARGET_SLE_SOURCE_S3_PATH="k3s/$RPM_CHANNEL/common/microos/source"
+
+case "$RPM_CHANNEL" in
+  "testing")
+    if [ -z "$TESTING_AWS_S3_BUCKET" ]; then
+      echo "TESTING_AWS_S3_BUCKET not defined, failing rpm upload"
+      exit 1
+    fi
+    if [ -z "$TESTING_AWS_ACCESS_KEY_ID" ]; then
+      echo "TESTING_AWS_ACCESS_KEY_ID not defined, failing rpm upload"
+      exit 1
+    fi
+    if [ -z "$TESTING_AWS_SECRET_ACCESS_KEY" ]; then
+      echo "TESTING_AWS_SECRET_ACCESS_KEY not defined, failing rpm upload"
+      exit 1
+    fi
+    export AWS_ACCESS_KEY_ID=$TESTING_AWS_ACCESS_KEY_ID
+    export AWS_SECRET_ACCESS_KEY=$TESTING_AWS_SECRET_ACCESS_KEY
+    export AWS_S3_BUCKET=$TESTING_AWS_S3_BUCKET
+    ;;
+  "latest"|"stable")
+    if [ -z "$AWS_S3_BUCKET" ]; then
+      echo "AWS_S3_BUCKET not defined, failing rpm upload"
+      exit 1
+    fi
+    if [ -z "$AWS_ACCESS_KEY_ID" ]; then
+      echo "AWS_ACCESS_KEY_ID not defined, failing rpm upload"
+      exit 1
+    fi
+    if [ -z "$AWS_SECRET_ACCESS_KEY" ]; then
+      echo "AWS_SECRET_ACCESS_KEY not defined, failing rpm upload"
+      exit 1
+    fi
+    ;;
+  *)
+    echo "RPM_CHANNEL $RPM_CHANNEL does not match one of: [testing, latest, stable]"
+    exit 1
+    ;;
+esac
+
+rpm-s3 --bucket $AWS_S3_BUCKET -p $TARGET_SLE_S3_PATH --keep 100000 dist/microos/noarch/k3s-*.rpm
+rpm-s3 --bucket $AWS_S3_BUCKET -p $TARGET_SLE_SOURCE_S3_PATH --keep 100000 dist/microos/source/k3s-*src.rpm

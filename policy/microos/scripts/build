@@ -17,8 +17,8 @@ rpmbuild \
     --define "_rpmdir ${PWD}/dist" \
     -ba k3s-selinux.spec
 
-#dnf install -y dist/noarch/k3s-selinux-*.rpm
+#zypper install -y --allow-unsigned-rpm dist/noarch/*.rpm
 #semodule --disable k3s
-#dnf remove k3s-selinux
-mkdir -p /source/dist/centos8
-cp -r dist/* /source/dist/centos8
+#zypper remove k3s-selinux
+mkdir -p /source/dist/microos
+cp -r dist/* /source/dist/microos

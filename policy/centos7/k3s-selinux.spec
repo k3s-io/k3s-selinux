@@ -1,7 +1,7 @@
 # vim: sw=4:ts=4:et
 
 
-%define relabel_files() \
+%define k3s_relabel_files() \
 mkdir -p /var/lib/cni; \
 mkdir -p /var/lib/kubelet/pods; \
 mkdir -p /var/lib/rancher/k3s/agent/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots; \
@@ -31,17 +31,20 @@ URL:		http://k3s.io
 Source0:	k3s.pp
 Source1:	k3s.if
 
+BuildArch: noarch
+BuildRequires: container-selinux >= %{container_policyver}
+BuildRequires: container-selinux < 2:2.164.2
+BuildRequires: git
+BuildRequires: selinux-policy-devel
 
 Requires: policycoreutils, libselinux-utils
-Requires(post): selinux-policy-base >= %{selinux_policyver}, policycoreutils, container-selinux >= %{container_policyver}
+Requires(post): selinux-policy-base >= %{selinux_policyver}, policycoreutils, container-selinux >= %{container_policyver}, container-selinux < 2:2.164.2
 Requires(postun): policycoreutils
 
 Conflicts: rke2-selinux
 
-BuildArch: noarch
-
 %description
-This package installs and sets up the  SELinux policy security module for k3s.
+This package installs and sets up the SELinux policy security module for k3s.
 
 %install
 install -d %{buildroot}%{_datadir}/selinux/packages
@@ -50,25 +53,23 @@ install -d %{buildroot}%{_datadir}/selinux/devel/include/contrib
 install -m 644 %{SOURCE1} %{buildroot}%{_datadir}/selinux/devel/include/contrib/
 install -d %{buildroot}/etc/selinux/targeted/contexts/users/
 
+%pre
+%selinux_relabel_pre
 
 %post
-semodule -n -i %{_datadir}/selinux/packages/k3s.pp
+%selinux_modules_install %{_datadir}/selinux/packages/k3s.pp
 if /usr/sbin/selinuxenabled ; then
     /usr/sbin/load_policy
-    %relabel_files
-
+    %k3s_relabel_files
 fi;
-exit 0
 
 %postun
 if [ $1 -eq 0 ]; then
-    semodule -n -r k3s
-    if /usr/sbin/selinuxenabled ; then
-       /usr/sbin/load_policy
-
-    fi;
+    %selinux_modules_uninstall k3s
 fi;
-exit 0
+
+%posttrans
+%selinux_relabel_post
 
 %files
 %attr(0600,root,root) %{_datadir}/selinux/packages/k3s.pp

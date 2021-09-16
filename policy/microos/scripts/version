@@ -1,0 +1,60 @@
+#!/bin/bash
+
+TREE_STATE=clean
+COMMIT=${COMMIT:-${DRONE_COMMIT:-${GITHUB_SHA:-unknown}}}
+TAG=${TAG:-${DRONE_TAG:-$GITHUB_TAG}}
+
+if [ -d ${DAPPER_SOURCE}/.git ]; then
+    pushd ${DAPPER_SOURCE}
+    if [ -n "$(git status --porcelain --untracked-files=no)" ]; then
+        DIRTY="dirty"
+        TREE_STATE=dirty
+    fi
+
+    if [[ "$TREE_STATE" == "clean" && -z "$TAG" ]]; then
+        TAG=$(git tag -l --contains HEAD | head -n 1) # this is going to not work if you have multiple tags pointing to the same commit
+    fi
+
+    COMMIT=$(git log -n3 --pretty=format:"%H %ae" | grep -v ' drone@localhost$' | cut -f1 -d\  | head -1)
+    if [ -z "$COMMIT" ]; then
+        COMMIT=$(git rev-parse HEAD || true)
+    fi
+    popd
+fi
+
+if [[ -n "$TAG" ]]; then
+    if [[ "$TREE_STATE" = "clean" ]]; then
+        VERSION=$TAG # We will only accept the tag as our version if the tree state is clean and the tag is in fact defined.
+    fi
+else
+    VERSION="v0.0~${COMMIT:0:8}${DIRTY}.testing.0"
+fi
+
+# v0.1.testing.1
+
+if ! [[ $VERSION =~ ^v[0-9]+\.[0-9]+[-~a-zA-Z0-9]*\.[a-z]+\.[0-9]+$ ]]; then
+    echo "Version $VERSION does not match our expected format. Exiting."
+    exit 1
+fi
+rpm_version_regex='s/\-/~/g; s/^v([0-9]+\.[0-9]+[-~a-zA-Z0-9]*)\.[a-z]+\.[0-9]+$/\1/;'
+rpm_channel_regex='s/^v[0-9]+\.[0-9]+[-~a-zA-Z0-9]*\.([a-z]+)\.[0-9]+$/\1/;'
+rpm_release_regex='s/^v[0-9]+\.[0-9]+[-~a-zA-Z0-9]*\.[a-z]+\.([0-9]+)$/\1/;'
+
+RPM_VERSION=$(sed -E -e "$rpm_version_regex" <<<"$VERSION")
+RPM_RELEASE=$(sed -E -e "$rpm_release_regex" <<<"$VERSION")
+RPM_CHANNEL=$(sed -E -e "$rpm_channel_regex" <<<"$VERSION")
+
+if [[ "$RPM_CHANNEL" == "$VERSION" ]]; then
+    echo "Unknown RPM_CHANNEL found: $RPM_CHANNEL but defaulting to testing"
+    RPM_CHANNEL="testing"
+fi
+
+case "$RPM_CHANNEL" in
+    "testing"|"latest"|"stable")
+        echo "RPM_CHANNEL matched our expected variants"
+        ;;
+    *)
+        echo "RPM_CHANNEL $RPM_CHANNEL does not match one of: [testing, latest, stable]"
+        exit 1
+        ;;
+esac 

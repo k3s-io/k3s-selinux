@@ -1,6 +1,7 @@
 FROM centos:8
 
-RUN yum install -y epel-release && yum -y install container-selinux selinux-policy-devel yum-utils rpm-build git jq
+RUN yum install -y epel-release \
+ && yum -y install container-selinux git rpm-build selinux-policy-devel yum-utils
 
 ENV DAPPER_SOURCE /source
 ENV DAPPER_OUTPUT ./dist
