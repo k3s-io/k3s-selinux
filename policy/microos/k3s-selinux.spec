@@ -33,7 +33,6 @@ Source1:	k3s.if
 
 BuildArch: noarch
 BuildRequires: container-selinux >= %{container_policyver}
-BuildRequires: container-selinux < 2:2.164.2
 BuildRequires: git
 BuildRequires: selinux-policy-devel
 
