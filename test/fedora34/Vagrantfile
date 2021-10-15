@@ -4,7 +4,7 @@
 Vagrant.configure("2") do |config|
   config.vagrant.plugins = ["vagrant-k3s"]
 
-  config.vm.box = "centos/8"
+  config.vm.box = "fedora/34-cloud-base"
 
   %w[hyperv libvirt virtualbox vmware_desktop].each do |p|
     config.vm.provider p do |v, o|
@@ -22,6 +22,7 @@ Vagrant.configure("2") do |config|
       #!/usr/bin/env bash
       set -eux -o pipefail
       dnf install -y \
+          https://kojipkgs.fedoraproject.org/packages/container-selinux/2.170.0/2.fc34/noarch/container-selinux-2.170.0-2.fc34.noarch.rpm \
           /vagrant/dist/k3s-selinux-*.el8.noarch.rpm
     EOF
   end

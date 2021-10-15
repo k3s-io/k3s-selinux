@@ -8,7 +8,7 @@ platform:
 
 steps:
 - name: Build EL7
-  image: rancher/dapper:v0.5.0
+  image: rancher/dapper:v0.5.7
   commands:
   - dapper -f Dockerfile.centos7.dapper policy/centos7/scripts/build
   volumes:
@@ -98,7 +98,7 @@ platform:
 
 steps:
 - name: Build EL8
-  image: rancher/dapper:v0.5.0
+  image: rancher/dapper:v0.5.7
   commands:
   - dapper -f Dockerfile.centos8.dapper policy/centos8/scripts/build
   volumes:
@@ -188,7 +188,7 @@ platform:
 
 steps:
 - name: Build SLE
-  image: rancher/dapper:v0.5.0
+  image: rancher/dapper:v0.5.7
   commands:
   - dapper -f Dockerfile.microos.dapper policy/microos/scripts/build
   volumes:
