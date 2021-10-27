@@ -1,0 +1,41 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vagrant.plugins = ["vagrant-k3s"]
+
+  config.vm.box = "fedora/34-cloud-base"
+
+  %w[hyperv libvirt virtualbox vmware_desktop].each do |p|
+    config.vm.provider p do |v, o|
+      v.memory = "2048"
+      v.cpus = 2
+    end
+  end
+
+  config.vm.synced_folder '.', '/vagrant', disabled: true
+  config.vm.synced_folder '../../dist/centos8/noarch', '/vagrant/dist', type: 'rsync'
+
+  config.vm.provision :shell, run: 'once', inline: 'set -x; dnf install -y https://github.com/k3s-io/k3s-selinux/releases/download/v0.4.stable.1/k3s-selinux-0.4-1.el8.noarch.rpm'
+  config.vm.provision :shell, run: 'once' do |sh|
+    sh.inline = <<~EOF
+      #!/usr/bin/env bash
+      set -eux -o pipefail
+      dnf install -y \
+          https://kojipkgs.fedoraproject.org/packages/container-selinux/2.170.0/2.fc34/noarch/container-selinux-2.170.0-2.fc34.noarch.rpm \
+          /vagrant/dist/k3s-selinux-*.el8.noarch.rpm
+    EOF
+  end
+
+  # vagrant [up|provision] --provision-with=k3s
+  config.vm.provision :k3s, run: 'never' do |k3s|
+    k3s.env = <<~ENV
+      INSTALL_K3S_NAME=server
+      INSTALL_K3S_SKIP_SELINUX_RPM=true
+      INSTALL_K3S_VERSION=v1.21.5+k3s2
+      K3S_KUBECONFIG_MODE=0644
+      K3S_SELINUX=true
+      K3S_TOKEN=vagrant
+    ENV
+  end
+end
