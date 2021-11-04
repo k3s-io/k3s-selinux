@@ -13,8 +13,8 @@
 #/var/lib/rancher/k3s/agent/containerd/[^/]*/snapshots/[^/]*/.*      <<none>>
 #/var/lib/rancher/k3s/agent/containerd/[^/]*/sandboxes(/.*)?         gen_context(system_u:object_r:container_share_t,s0)
 #/var/lib/rancher/k3s/data(/.*)?                                     gen_context(system_u:object_r:container_runtime_exec_t,s0)
-/var/lib/rancher/k3s/data/.lock                                      gen_context(system_u:object_r:container_lock_t,s0)
-/var/lib/rancher/k3s/data/[^/]*/etc(/.*)?                            gen_context(system_u:object_r:container_config_t,s0)
+#/var/lib/rancher/k3s/data/.lock                                     gen_context(system_u:object_r:container_lock_t,s0)
+#/var/lib/rancher/k3s/data/[^/]*/etc(/.*)?                           gen_context(system_u:object_r:container_config_t,s0)
 #/var/lib/rancher/k3s/storage(/.*)?                                  gen_context(system_u:object_r:container_file_t,s0)
 #/var/log/containers(/.*)?                                           gen_context(system_u:object_r:container_log_t,s0)
 #/var/log/pods(/.*)?                                                 gen_context(system_u:object_r:container_log_t,s0)
