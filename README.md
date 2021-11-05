@@ -1,5 +1,10 @@
 # k3s-selinux
-K3s selinux policy repository
+K3s selinux policy repository.
+
+## Signing Keys
+
+- https://rpm.rancher.io/public.key
+- https://rpm-testing.rancher.io/public.key
 
 ## Versioning/Tagging
 
