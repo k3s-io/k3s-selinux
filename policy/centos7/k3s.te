@@ -6,21 +6,21 @@ files_type(k3s_data_t);
 
 ##### type: k3s_lock_t
 type k3s_lock_t;
-files_lock_file(k3s_lock_t)
+files_lock_file(k3s_lock_t);
 
 ##### type: k3s_root_t, attr: k3s_root_domain
-k3s_runtime_domain_template(k3s_root)
+k3s_runtime_domain_template(k3s_root);
 
 gen_require(`
-    attribute container_runtime_domain;
+    attribute container_domain;
     type container_runtime_exec_t, container_runtime_t;
     type container_file_t, container_share_t;
     type container_var_lib_t, var_lib_t;
     type container_log_t, var_log_t;
 ')
-admin_pattern(container_runtime_domain, k3s_data_t)
-admin_pattern(container_runtime_domain, k3s_lock_t)
-files_lock_filetrans(container_runtime_domain, k3s_lock_t, { dir file })
+admin_pattern(container_domain, k3s_data_t)
+admin_pattern(container_domain, k3s_lock_t)
+files_lock_filetrans(container_domain, k3s_lock_t, { dir file })
 filetrans_pattern(container_runtime_t, container_var_lib_t, k3s_data_t, dir, "data")
 filetrans_pattern(container_runtime_t, k3s_data_t, k3s_lock_t, file, ".lock")
 filetrans_pattern(container_runtime_t, k3s_data_t, k3s_root_t, dir, "bin")
