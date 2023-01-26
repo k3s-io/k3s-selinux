@@ -16,7 +16,7 @@
         restorecon -R /var/run/flannel
 
 %define selinux_policyver 20210716-3.1
-%define container_policyver 2.164.2-1.1
+%define container_policyver 2.191.0-1
 
 Name:   k3s-selinux
 Version:	%{k3s_selinux_version}
