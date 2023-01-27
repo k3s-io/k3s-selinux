@@ -25,7 +25,7 @@ Summary:	SELinux policy module for k3s
 
 Group:	System Environment/Base
 License:	ASL 2.0
-URL:		http://k3s.io
+URL:		https://k3s.io
 Source0:	k3s.pp
 Source1:	k3s.if
 
