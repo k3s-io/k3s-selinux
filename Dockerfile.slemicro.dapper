@@ -1,0 +1,15 @@
+ARG TUMBLEWEED=opensuse/tumbleweed
+FROM ${TUMBLEWEED}
+ADD https://github.com/AkihiroSuda/clone3-workaround/releases/download/v1.0.0/clone3-workaround.x86_64 /bin/clone3-workaround
+RUN chmod +x /bin/clone3-workaround
+SHELL ["clone3-workaround", "/usr/bin/env", "bash","-c"]
+RUN zypper install -y container-selinux git rpm-build selinux-policy-devel
+
+
+ENV DAPPER_SOURCE /source
+ENV DAPPER_OUTPUT ./dist
+ENV DAPPER_ENV COMBARCH DRONE_TAG TAG
+ENV HOME ${DAPPER_SOURCE}
+WORKDIR ${DAPPER_SOURCE}
+
+ENTRYPOINT ["clone3-workaround", "./policy/slemicro/scripts/entry"]

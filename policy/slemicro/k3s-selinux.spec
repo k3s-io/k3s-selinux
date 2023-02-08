@@ -15,14 +15,13 @@
         restorecon -R /var/run/k3s; \
         restorecon -R /var/run/flannel
 
-%define selinux_policyver 3.13.1-252
-%define container_policyver 2.107-3
-%define container_policy_epoch 2
-%define container_policy_schism 2.164.2
+%define selinux_policyver 20210716-3.1
+%define container_policyver 2.167.0-1
+%define container_policyver_max 2.191.0-1
 
 Name:   k3s-selinux
 Version:	%{k3s_selinux_version}
-Release:	%{k3s_selinux_release}.el7
+Release:	%{k3s_selinux_release}.sle
 Summary:	SELinux policy module for k3s
 
 Group:	System Environment/Base
@@ -32,16 +31,13 @@ Source0:	k3s.pp
 Source1:	k3s.if
 
 BuildArch: noarch
-BuildRequires: container-selinux >= %{container_policy_epoch}:%{container_policyver}
-BuildRequires: container-selinux < %{container_policy_epoch}:%{container_policy_schism}
+BuildRequires: container-selinux >= %{container_policyver}
 BuildRequires: git
 BuildRequires: selinux-policy >= %{selinux_policyver}
 BuildRequires: selinux-policy-devel >= %{selinux_policyver}
 
-Requires: policycoreutils, libselinux-utils
-Requires(post): selinux-policy-base >= %{selinux_policyver}, policycoreutils
-Requires(post): container-selinux >= %{container_policy_epoch}:%{container_policyver}
-Requires(post): container-selinux < %{container_policy_epoch}:%{container_policy_schism}
+Requires: policycoreutils, selinux-tools
+Requires(post): selinux-policy-base >= %{selinux_policyver}, policycoreutils, container-selinux >= %{container_policyver}, container-selinux < %{container_policyver_max}
 Requires(postun): policycoreutils
 
 Provides: %{name} = %{version}-%{release}

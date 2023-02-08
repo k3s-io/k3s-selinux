@@ -33,7 +33,7 @@ filetrans_pattern(container_runtime_t, k3s_root_t, container_runtime_exec_t, fil
 filetrans_pattern(container_runtime_t, k3s_root_t, container_runtime_exec_t, file, "containerd-shim-runc-v2")
 filetrans_pattern(container_runtime_t, k3s_root_t, container_runtime_exec_t, file, "runc")
 filetrans_pattern(container_runtime_t, container_var_lib_t, container_file_t, dir, "storage")
-filetrans_pattern(container_runtime_t, container_var_lib_t, container_file_t, dir, "snapshots")
+filetrans_pattern(container_runtime_t, container_var_lib_t, container_share_t, dir, "snapshots")
 filetrans_pattern(container_runtime_t, var_lib_t, container_var_lib_t, dir, "kubelet")
 filetrans_pattern(container_runtime_t, container_var_lib_t, container_file_t, dir, "pods")
 filetrans_pattern(container_runtime_t, var_log_t, container_log_t, dir, "containers")

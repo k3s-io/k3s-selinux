@@ -17,6 +17,7 @@
 
 %define selinux_policyver 3.14.3-67
 %define container_policyver 2.167.0-1
+%define container_policyver_max 2.191.0-1
 %define container_policy_epoch 2
 
 Name:   k3s-selinux
@@ -26,19 +27,19 @@ Summary:	SELinux policy module for k3s
 
 Group:	System Environment/Base
 License:	ASL 2.0
-URL:		http://k3s.io
+URL:		https://k3s.io
 Source0:	k3s.pp
 Source1:	k3s.if
 
 BuildArch: noarch
-BuildRequires: container-selinux >= %{container_policy_epoch}:%{container_policyver}
+BuildRequires: container-selinux >= %{container_policy_epoch}:%{container_policyver}, container-selinux < %{container_policy_epoch}:%{container_policyver_max}
 BuildRequires: git
 BuildRequires: selinux-policy >= %{selinux_policyver}
 BuildRequires: selinux-policy-devel >= %{selinux_policyver}
 
 Requires: policycoreutils, libselinux-utils
 Requires(post): selinux-policy-base >= %{selinux_policyver}, policycoreutils
-Requires(post): container-selinux >= %{container_policy_epoch}:%{container_policyver}
+Requires(post): container-selinux >= %{container_policy_epoch}:%{container_policyver}, container-selinux < %{container_policy_epoch}:%{container_policyver_max}
 Requires(postun): policycoreutils
 
 Provides: %{name} = %{version}-%{release}

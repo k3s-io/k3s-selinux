@@ -1,6 +1,8 @@
 CENTOS7_TARGETS := $(addprefix centos7-,$(shell ls policy/centos7/scripts))
 CENTOS8_TARGETS := $(addprefix centos8-,$(shell ls policy/centos8/scripts))
 MICROOS_TARGETS := $(addprefix microos-,$(shell ls policy/microos/scripts))
+SLEMICRO_TARGETS := $(addprefix slemicro-,$(shell ls policy/slemicro/scripts))
+COREOS_TARGETS := $(addprefix coreos-,$(shell ls policy/coreos/scripts))
 
 .dapper:
 	@echo Downloading dapper
@@ -17,5 +19,11 @@ $(CENTOS8_TARGETS): .dapper
 
 $(MICROOS_TARGETS): .dapper
 	./.dapper -f Dockerfile.microos.dapper $(@:microos-%=%)
+
+$(SLEMICRO_TARGETS): .dapper
+	./.dapper -f Dockerfile.slemicro.dapper $(@:slemicro-%=%)
+
+$(COREOS_TARGETS): .dapper
+	./.dapper -f Dockerfile.coreos.dapper $(@:coreos-%=%)
 
 .PHONY: $(CENTOS7_TARGETS) $(CENTOS8_TARGETS)

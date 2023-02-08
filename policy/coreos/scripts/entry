@@ -1,0 +1,12 @@
+#!/bin/sh
+set -ex
+
+if [ -e ./policy/coreos/scripts/"$1" ]; then
+    ./policy/coreos/scripts/"$@"
+else
+    exec "$@"
+fi
+
+if [ "$DAPPER_UID" -ne "-1" ]; then
+  chown -R $DAPPER_UID:$DAPPER_GID .
+fi
