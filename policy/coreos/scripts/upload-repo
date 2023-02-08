@@ -16,8 +16,8 @@ if [ -z "$RPM_CHANNEL" ]; then
   exit 1
 fi
 
-TARGET_EL8_S3_PATH="k3s/$RPM_CHANNEL/common/centos/8/noarch"
-TARGET_EL8_SOURCE_S3_PATH="k3s/$RPM_CHANNEL/common/centos/8/source"
+TARGET_EL8_S3_PATH="k3s/$RPM_CHANNEL/common/coreos/8/noarch"
+TARGET_EL8_SOURCE_S3_PATH="k3s/$RPM_CHANNEL/common/coreos/8/source"
 
 case "$RPM_CHANNEL" in
   "testing")
