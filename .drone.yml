@@ -251,7 +251,7 @@ steps:
     prerelease: true
     checksum:
     - sha256
-    checksum_file: CHECKSUMsum-microos-noarch.txt
+    checksum_file: CHECKSUMsum-slemicro-noarch.txt
     checksum_flatten: true
     files:
     - "dist/slemicro/**/*.rpm"
@@ -433,7 +433,7 @@ steps:
     prerelease: true
     checksum:
     - sha256
-    checksum_file: CHECKSUMsum-microos-noarch.txt
+    checksum_file: CHECKSUMsum-coreos-noarch.txt
     checksum_flatten: true
     files:
     - "dist/coreos/**/*.rpm"

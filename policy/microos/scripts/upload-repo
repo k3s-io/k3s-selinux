@@ -16,8 +16,8 @@ if [ -z "$RPM_CHANNEL" ]; then
   exit 1
 fi
 
-TARGET_SLE_S3_PATH="k3s/$RPM_CHANNEL/common/microos/noarch"
-TARGET_SLE_SOURCE_S3_PATH="k3s/$RPM_CHANNEL/common/microos/source"
+TARGET_MICROOS_S3_PATH="k3s/$RPM_CHANNEL/common/microos/noarch"
+TARGET_MICROOS_SOURCE_S3_PATH="k3s/$RPM_CHANNEL/common/microos/source"
 
 case "$RPM_CHANNEL" in
   "testing")
@@ -57,5 +57,5 @@ case "$RPM_CHANNEL" in
     ;;
 esac
 
-rpm-s3 --bucket $AWS_S3_BUCKET -p $TARGET_SLE_S3_PATH --keep 100000 dist/microos/noarch/k3s-*.rpm
-rpm-s3 --bucket $AWS_S3_BUCKET -p $TARGET_SLE_SOURCE_S3_PATH --keep 100000 dist/microos/source/k3s-*src.rpm
+rpm-s3 --bucket $AWS_S3_BUCKET -p $TARGET_MICROOS_S3_PATH --keep 100000 dist/microos/noarch/k3s-*.rpm
+rpm-s3 --bucket $AWS_S3_BUCKET -p $TARGET_MICROOS_SOURCE_S3_PATH --keep 100000 dist/microos/source/k3s-*src.rpm

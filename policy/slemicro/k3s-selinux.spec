@@ -21,7 +21,7 @@
 
 Name:   k3s-selinux
 Version:	%{k3s_selinux_version}
-Release:	%{k3s_selinux_release}.sle
+Release:	%{k3s_selinux_release}.slemicro
 Summary:	SELinux policy module for k3s
 
 Group:	System Environment/Base
