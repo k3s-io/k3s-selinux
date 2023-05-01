@@ -1,0 +1,14 @@
+FROM centos:8
+
+RUN find /etc/yum.repos.d -type f -name '*.repo' -exec \
+    sed -i -e '/mirrorlist.*/d' -e 's%#baseurl=http://mirror.centos.org%baseurl=http://vault.centos.org%g' {} \;
+RUN yum install -y epel-release \
+ && yum -y install container-selinux git rpm-build selinux-policy-devel yum-utils
+
+ENV DAPPER_SOURCE /source
+ENV DAPPER_OUTPUT ./dist
+ENV DAPPER_ENV COMBARCH DRONE_TAG TAG
+ENV HOME ${DAPPER_SOURCE}
+WORKDIR ${DAPPER_SOURCE}
+
+ENTRYPOINT ["./policy/centos9/scripts/entry"]
