@@ -18,11 +18,11 @@
 %define selinux_policyver 3.14.3-67
 %define container_policyver 2.167.0-1
 %define container_policyver_max 2.191.0-1
-%define container_policy_epoch 2
+%define container_policy_epoch 3
 
 Name:   k3s-selinux
 Version:	%{k3s_selinux_version}
-Release:	%{k3s_selinux_release}.el8
+Release:	%{k3s_selinux_release}.el9
 Summary:	SELinux policy module for k3s
 
 Group:	System Environment/Base

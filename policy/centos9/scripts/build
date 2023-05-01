@@ -20,5 +20,5 @@ rpmbuild \
 #dnf install -y dist/noarch/k3s-selinux-*.rpm
 #semodule --disable k3s
 #dnf remove k3s-selinux
-mkdir -p /source/dist/centos8
-cp -r dist/* /source/dist/centos8
+mkdir -p /source/dist/centos9
+cp -r dist/* /source/dist/centos9
