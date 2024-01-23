@@ -1,4 +1,4 @@
-FROM fedora:37
+FROM fedora:39
 
 RUN find /etc/yum.repos.d -type f -name '*.repo' -exec \
     sed -i -e '/mirrorlist.*/d' -e 's%#baseurl=http://mirror.centos.org%baseurl=http://vault.centos.org%g' {} \;
