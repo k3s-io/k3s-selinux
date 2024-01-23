@@ -1,0 +1,9 @@
+---
+version: 2
+updates:
+  - package-ecosystem: "docker"
+    directory: "/"
+    reviewers:
+      - "k3s-io/k3s-dev"
+    schedule:
+      interval: "monthly"
