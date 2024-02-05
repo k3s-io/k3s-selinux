@@ -5,6 +5,7 @@
 /usr/local/lib/systemd/system/k3s.*                             --  gen_context(system_u:object_r:container_unit_file_t,s0)
 /usr/s?bin/k3s                                                  --  gen_context(system_u:object_r:container_runtime_exec_t,s0)
 /usr/local/s?bin/k3s                                            --  gen_context(system_u:object_r:container_runtime_exec_t,s0)
+/opt/k3s/bin/k3s                                                --  gen_context(system_u:object_r:container_runtime_exec_t,s0)
 /var/lib/rancher/k3s(/.*)?                                          gen_context(system_u:object_r:container_var_lib_t,s0)
 /var/lib/rancher/k3s/agent/containerd/[^/]*/snapshots           -d  gen_context(system_u:object_r:container_share_t,s0)
 /var/lib/rancher/k3s/agent/containerd/[^/]*/snapshots/[^/]*     -d  gen_context(system_u:object_r:container_share_t,s0)
