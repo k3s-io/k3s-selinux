@@ -23,5 +23,5 @@
 /var/lib/rancher/k3s/data/[^/]*/bin/runc                        --  gen_context(system_u:object_r:container_runtime_exec_t,s0)
 /var/lib/rancher/k3s/data/[^/]*/etc(/.*)?                           gen_context(system_u:object_r:container_config_t,s0)
 /var/lib/rancher/k3s/storage(/.*)?                                  gen_context(system_u:object_r:container_file_t,s0)
-/var/run/k3s(/.*)?                                                  gen_context(system_u:object_r:container_var_run_t,s0)
-/var/run/k3s/containerd/[^/]*/sandboxes/[^/]*/shm(/.*)?             gen_context(system_u:object_r:container_runtime_tmpfs_t,s0)
+/run/k3s(/.*)?                                                      gen_context(system_u:object_r:container_var_run_t,s0)
+/run/k3s/containerd/[^/]*/sandboxes/[^/]*/shm(/.*)?                 gen_context(system_u:object_r:container_runtime_tmpfs_t,s0)
