@@ -17,7 +17,6 @@
 
 %define selinux_policyver 20210716-3.1
 %define container_policyver 2.167.0-1
-%define container_policyver_max 2.191.0-1
 
 Name:   k3s-selinux
 Version:	%{k3s_selinux_version}
@@ -37,7 +36,7 @@ BuildRequires: selinux-policy >= %{selinux_policyver}
 BuildRequires: selinux-policy-devel >= %{selinux_policyver}
 
 Requires: policycoreutils, selinux-tools
-Requires(post): selinux-policy-base >= %{selinux_policyver}, policycoreutils, container-selinux >= %{container_policyver}, container-selinux < %{container_policyver_max}
+Requires(post): selinux-policy-base >= %{selinux_policyver}, policycoreutils, container-selinux >= %{container_policyver}
 Requires(postun): policycoreutils
 
 Provides: %{name} = %{version}-%{release}
