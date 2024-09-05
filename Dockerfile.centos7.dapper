@@ -1,11 +1,14 @@
 FROM centos:7
 
+RUN sed -i -e "s/mirrorlist.*//g" /etc/yum.repos.d/*
+RUN sed -i -e "s/#baseurl=http:\/\/mirror.centos.org/baseurl=http:\/\/linuxsoft.cern.ch\/centos-vault\//g" /etc/yum.repos.d/*
+
 RUN yum install -y epel-release \
  && yum -y install container-selinux git rpm-build selinux-policy-devel yum-utils
 
 ENV DAPPER_SOURCE /source
 ENV DAPPER_OUTPUT ./dist
-ENV DAPPER_ENV COMBARCH DRONE_TAG TAG
+ENV DAPPER_ENV COMBARCH DRONE_TAG TAG PRIVATE_KEY PRIVATE_KEY_PASS_PHRASE TESTING_PRIVATE_KEY TESTING_PRIVATE_KEY_PASS_PHRASE AWS_S3_BUCKET AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY TESTING_AWS_S3_BUCKET TESTING_AWS_ACCESS_KEY_ID TESTING_AWS_SECRET_ACCESS_KEY
 ENV HOME ${DAPPER_SOURCE}
 WORKDIR ${DAPPER_SOURCE}
 
