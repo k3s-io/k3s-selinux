@@ -117,7 +117,7 @@ steps:
     TESTING_PRIVATE_KEY_PASS_PHRASE:
       from_secret: testing_private_key_pass_phrase
   commands:
-  - sign-centos8
+  - make sign-centos8
   when:
     instance:
     - drone-publish.k3s.io
@@ -324,7 +324,7 @@ steps:
     TESTING_AWS_SECRET_ACCESS_KEY:
       from_secret: testing_aws_secret_access_key
   commands:
-  - upload-microos
+  - make upload-microos
   when:
     instance:
     - drone-publish.k3s.io
