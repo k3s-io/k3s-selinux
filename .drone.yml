@@ -10,7 +10,7 @@ steps:
 - name: Build EL7
   image: rancher/dapper:v0.6.0
   commands:
-  - make build-centos7
+  - dapper -f Dockerfile.centos7.dapper ./policy/centos7/scripts/build
   volumes:
   - name: docker
     path: /var/run/docker.sock
@@ -27,7 +27,7 @@ steps:
     TESTING_PRIVATE_KEY_PASS_PHRASE:
       from_secret: testing_private_key_pass_phrase
   commands:
-  - make sign-centos7
+  - dapper -f Dockerfile.centos7.dapper ./policy/centos7/scripts/sign
   when:
     instance:
     - drone-publish.k3s.io
@@ -53,7 +53,7 @@ steps:
     TESTING_AWS_SECRET_ACCESS_KEY:
       from_secret: testing_aws_secret_access_key
   commands:
-  - make upload-centos7
+  - dapper -f Dockerfile.centos7.dapper ./policy/centos7/scripts/upload-repo
   when:
     instance:
     - drone-publish.k3s.io
@@ -100,7 +100,7 @@ steps:
 - name: Build EL8
   image: rancher/dapper:v0.6.0
   commands:
-  - make build-centos8
+  - dapper -f Dockerfile.centos8.dapper ./policy/centos8/scripts/build
   volumes:
   - name: docker
     path: /var/run/docker.sock
@@ -117,7 +117,7 @@ steps:
     TESTING_PRIVATE_KEY_PASS_PHRASE:
       from_secret: testing_private_key_pass_phrase
   commands:
-  - make sign-centos8
+  - dapper -f Dockerfile.centos7.dapper ./policy/centos8/scripts/sign
   when:
     instance:
     - drone-publish.k3s.io
@@ -143,7 +143,7 @@ steps:
     TESTING_AWS_SECRET_ACCESS_KEY:
       from_secret: testing_aws_secret_access_key
   commands:
-  - make upload-centos8
+  - dapper -f Dockerfile.centos7.dapper ./policy/centos8/scripts/upload-repo
   when:
     instance:
     - drone-publish.k3s.io
@@ -190,7 +190,7 @@ steps:
 - name: Build SLE Micro
   image: rancher/dapper:v0.6.0
   commands:
-  - make build-slemicro
+  - dapper -f Dockerfile.slemicro.dapper ./policy/slemicro/scripts/build
   volumes:
   - name: docker
     path: /var/run/docker.sock
@@ -207,7 +207,7 @@ steps:
     TESTING_PRIVATE_KEY_PASS_PHRASE:
       from_secret: testing_private_key_pass_phrase
   commands:
-  - make sign-slemicro
+  - dapper -f Dockerfile.centos7.dapper ./policy/slemicro/scripts/sign
   when:
     instance:
     - drone-publish.k3s.io
@@ -233,7 +233,7 @@ steps:
     TESTING_AWS_SECRET_ACCESS_KEY:
       from_secret: testing_aws_secret_access_key
   commands:
-  - make upload-slemicro
+  - dapper -f Dockerfile.centos7.dapper ./policy/slemicro/scripts/upload-repo
   when:
     instance:
     - drone-publish.k3s.io
@@ -281,7 +281,7 @@ steps:
 - name: Build MicroOS
   image: rancher/dapper:v0.6.0
   commands:
-  - make build-microos
+  - dapper -f Dockerfile.microos.dapper ./policy/microos/scripts/build
   volumes:
   - name: docker
     path: /var/run/docker.sock
@@ -298,7 +298,7 @@ steps:
     TESTING_PRIVATE_KEY_PASS_PHRASE:
       from_secret: testing_private_key_pass_phrase
   commands:
-  - make sign-microos
+  - dapper -f Dockerfile.centos7.dapper ./policy/microos/scripts/sign
   when:
     instance:
     - drone-publish.k3s.io
@@ -324,7 +324,7 @@ steps:
     TESTING_AWS_SECRET_ACCESS_KEY:
       from_secret: testing_aws_secret_access_key
   commands:
-  - make upload-microos
+  - dapper -f Dockerfile.centos7.dapper ./policy/microos/scripts/upload-repo
   when:
     instance:
     - drone-publish.k3s.io
@@ -372,7 +372,7 @@ steps:
 - name: Build Fedora CoreOS
   image: rancher/dapper:v0.6.0
   commands:
-  - make build-coreos
+  - dapper -f Dockerfile.coreos.dapper ./policy/coreos/scripts/build
   volumes:
   - name: docker
     path: /var/run/docker.sock
@@ -389,7 +389,7 @@ steps:
     TESTING_PRIVATE_KEY_PASS_PHRASE:
       from_secret: testing_private_key_pass_phrase
   commands:
-  - make sign-coreos
+  - dapper -f Dockerfile.centos7.dapper ./policy/coreos/scripts/sign
   when:
     instance:
     - drone-publish.k3s.io
@@ -415,7 +415,7 @@ steps:
     TESTING_AWS_SECRET_ACCESS_KEY:
       from_secret: testing_aws_secret_access_key
   commands:
-  - make upload-coreos
+  - dapper -f Dockerfile.centos7.dapper ./policy/coreos/scripts/upload-repo
   when:
     instance:
     - drone-publish.k3s.io
@@ -462,7 +462,7 @@ steps:
 - name: Build EL9
   image: rancher/dapper:v0.6.0
   commands:
-  - make build-centos9
+  - dapper -f Dockerfile.centos9.dapper ./policy/centos9/scripts/build
   volumes:
   - name: docker
     path: /var/run/docker.sock
@@ -479,7 +479,7 @@ steps:
     TESTING_PRIVATE_KEY_PASS_PHRASE:
       from_secret: testing_private_key_pass_phrase
   commands:
-  - make sign-centos9
+  - dapper -f Dockerfile.centos7.dapper ./policy/centos9/scripts/sign
   when:
     instance:
     - drone-publish.k3s.io
@@ -505,7 +505,7 @@ steps:
     TESTING_AWS_SECRET_ACCESS_KEY:
       from_secret: testing_aws_secret_access_key
   commands:
-  - make upload-centos9
+  - dapper -f Dockerfile.centos7.dapper ./policy/centos9/scripts/upload-repo
   when:
     instance:
     - drone-publish.k3s.io
