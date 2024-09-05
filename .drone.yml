@@ -10,13 +10,13 @@ steps:
 - name: Build EL7
   image: rancher/dapper:v0.6.0
   commands:
-  - dapper -f Dockerfile.centos7.dapper policy/centos7/scripts/build
+  - make build-centos7
   volumes:
   - name: docker
     path: /var/run/docker.sock
 
 - name: Sign RPM EL7
-  image: centos:7
+  image: rancher/dapper:v0.6.0
   environment:
     PRIVATE_KEY:
       from_secret: private_key
@@ -27,7 +27,7 @@ steps:
     TESTING_PRIVATE_KEY_PASS_PHRASE:
       from_secret: testing_private_key_pass_phrase
   commands:
-  - policy/centos7/scripts/sign
+  - make sign-centos7
   when:
     instance:
     - drone-publish.k3s.io
@@ -38,7 +38,7 @@ steps:
     - tag
 
 - name: Yum Repo Upload EL7
-  image: centos:7
+  image: rancher/dapper:v0.6.0
   environment:
     AWS_S3_BUCKET:
       from_secret: aws_s3_bucket
@@ -53,7 +53,7 @@ steps:
     TESTING_AWS_SECRET_ACCESS_KEY:
       from_secret: testing_aws_secret_access_key
   commands:
-  - policy/centos7/scripts/upload-repo
+  - make upload-centos7
   when:
     instance:
     - drone-publish.k3s.io
@@ -100,13 +100,13 @@ steps:
 - name: Build EL8
   image: rancher/dapper:v0.6.0
   commands:
-  - dapper -f Dockerfile.centos8.dapper policy/centos8/scripts/build
+  - make build-centos8
   volumes:
   - name: docker
     path: /var/run/docker.sock
 
 - name: Sign RPM EL8
-  image: centos:7
+  image: rancher/dapper:v0.6.0
   environment:
     PRIVATE_KEY:
       from_secret: private_key
@@ -117,7 +117,7 @@ steps:
     TESTING_PRIVATE_KEY_PASS_PHRASE:
       from_secret: testing_private_key_pass_phrase
   commands:
-  - policy/centos8/scripts/sign
+  - sign-centos8
   when:
     instance:
     - drone-publish.k3s.io
@@ -128,7 +128,7 @@ steps:
     - tag
 
 - name: Yum Repo Upload EL8
-  image: centos:7
+  image: rancher/dapper:v0.6.0
   environment:
     AWS_S3_BUCKET:
       from_secret: aws_s3_bucket
@@ -143,7 +143,7 @@ steps:
     TESTING_AWS_SECRET_ACCESS_KEY:
       from_secret: testing_aws_secret_access_key
   commands:
-  - policy/centos8/scripts/upload-repo
+  - make upload-centos8
   when:
     instance:
     - drone-publish.k3s.io
@@ -190,13 +190,13 @@ steps:
 - name: Build SLE Micro
   image: rancher/dapper:v0.6.0
   commands:
-  - dapper -f Dockerfile.slemicro.dapper policy/slemicro/scripts/build
+  - make build-slemicro
   volumes:
   - name: docker
     path: /var/run/docker.sock
 
 - name: Sign RPM SLE
-  image: centos:7
+  image: rancher/dapper:v0.6.0
   environment:
     PRIVATE_KEY:
       from_secret: private_key
@@ -207,7 +207,7 @@ steps:
     TESTING_PRIVATE_KEY_PASS_PHRASE:
       from_secret: testing_private_key_pass_phrase
   commands:
-  - policy/slemicro/scripts/sign
+  - make sign-slemicro
   when:
     instance:
     - drone-publish.k3s.io
@@ -218,7 +218,7 @@ steps:
     - tag
 
 - name: Yum Repo Upload SLE Micro
-  image: centos:7
+  image: rancher/dapper:v0.6.0
   environment:
     AWS_S3_BUCKET:
       from_secret: aws_s3_bucket
@@ -233,7 +233,7 @@ steps:
     TESTING_AWS_SECRET_ACCESS_KEY:
       from_secret: testing_aws_secret_access_key
   commands:
-  - policy/slemicro/scripts/upload-repo
+  - make upload-slemicro
   when:
     instance:
     - drone-publish.k3s.io
@@ -281,13 +281,13 @@ steps:
 - name: Build MicroOS
   image: rancher/dapper:v0.6.0
   commands:
-  - dapper -f Dockerfile.microos.dapper policy/microos/scripts/build
+  - make build-microos
   volumes:
   - name: docker
     path: /var/run/docker.sock
 
 - name: Sign RPM MicroOS
-  image: centos:7
+  image: rancher/dapper:v0.6.0
   environment:
     PRIVATE_KEY:
       from_secret: private_key
@@ -298,7 +298,7 @@ steps:
     TESTING_PRIVATE_KEY_PASS_PHRASE:
       from_secret: testing_private_key_pass_phrase
   commands:
-  - policy/microos/scripts/sign
+  - make sign-microos
   when:
     instance:
     - drone-publish.k3s.io
@@ -309,7 +309,7 @@ steps:
     - tag
 
 - name: Yum Repo Upload MicroOS
-  image: centos:7
+  image: rancher/dapper:v0.6.0
   environment:
     AWS_S3_BUCKET:
       from_secret: aws_s3_bucket
@@ -324,7 +324,7 @@ steps:
     TESTING_AWS_SECRET_ACCESS_KEY:
       from_secret: testing_aws_secret_access_key
   commands:
-  - policy/microos/scripts/upload-repo
+  - upload-microos
   when:
     instance:
     - drone-publish.k3s.io
@@ -372,13 +372,13 @@ steps:
 - name: Build Fedora CoreOS
   image: rancher/dapper:v0.6.0
   commands:
-  - dapper -f Dockerfile.coreos.dapper policy/coreos/scripts/build
+  - make build-coreos
   volumes:
   - name: docker
     path: /var/run/docker.sock
 
 - name: Sign RPM Fedora CoreOS
-  image: centos:7
+  image: rancher/dapper:v0.6.0
   environment:
     PRIVATE_KEY:
       from_secret: private_key
@@ -389,7 +389,7 @@ steps:
     TESTING_PRIVATE_KEY_PASS_PHRASE:
       from_secret: testing_private_key_pass_phrase
   commands:
-  - policy/coreos/scripts/sign
+  - make sign-coreos
   when:
     instance:
     - drone-publish.k3s.io
@@ -400,7 +400,7 @@ steps:
     - tag
 
 - name: Yum Repo Upload Fedora CoreOS
-  image: centos:7
+  image: rancher/dapper:v0.6.0
   environment:
     AWS_S3_BUCKET:
       from_secret: aws_s3_bucket
@@ -415,7 +415,7 @@ steps:
     TESTING_AWS_SECRET_ACCESS_KEY:
       from_secret: testing_aws_secret_access_key
   commands:
-  - policy/coreos/scripts/upload-repo
+  - make upload-coreos
   when:
     instance:
     - drone-publish.k3s.io
@@ -462,13 +462,13 @@ steps:
 - name: Build EL9
   image: rancher/dapper:v0.6.0
   commands:
-  - dapper -f Dockerfile.centos9.dapper policy/centos9/scripts/build
+  - make build-centos9
   volumes:
   - name: docker
     path: /var/run/docker.sock
 
 - name: Sign RPM EL9
-  image: centos:7
+  image: rancher/dapper:v0.6.0
   environment:
     PRIVATE_KEY:
       from_secret: private_key
@@ -479,7 +479,7 @@ steps:
     TESTING_PRIVATE_KEY_PASS_PHRASE:
       from_secret: testing_private_key_pass_phrase
   commands:
-  - policy/centos9/scripts/sign
+  - make sign-centos9
   when:
     instance:
     - drone-publish.k3s.io
@@ -490,7 +490,7 @@ steps:
     - tag
 
 - name: Yum Repo Upload EL9
-  image: centos:7
+  image: rancher/dapper:v0.6.0
   environment:
     AWS_S3_BUCKET:
       from_secret: aws_s3_bucket
@@ -505,7 +505,7 @@ steps:
     TESTING_AWS_SECRET_ACCESS_KEY:
       from_secret: testing_aws_secret_access_key
   commands:
-  - policy/centos9/scripts/upload-repo
+  - make upload-centos9
   when:
     instance:
     - drone-publish.k3s.io
