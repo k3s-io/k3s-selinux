@@ -28,6 +28,9 @@ steps:
       from_secret: testing_private_key_pass_phrase
   commands:
   - dapper -f Dockerfile.centos7.dapper ./policy/centos7/scripts/sign
+  volumes:
+  - name: docker
+    path: /var/run/docker.sock
   when:
     instance:
     - drone-publish.k3s.io
@@ -54,6 +57,9 @@ steps:
       from_secret: testing_aws_secret_access_key
   commands:
   - dapper -f Dockerfile.centos7.dapper ./policy/centos7/scripts/upload-repo
+  volumes:
+  - name: docker
+    path: /var/run/docker.sock
   when:
     instance:
     - drone-publish.k3s.io
@@ -118,6 +124,9 @@ steps:
       from_secret: testing_private_key_pass_phrase
   commands:
   - dapper -f Dockerfile.centos7.dapper ./policy/centos8/scripts/sign
+  volumes:
+  - name: docker
+    path: /var/run/docker.sock
   when:
     instance:
     - drone-publish.k3s.io
@@ -144,6 +153,9 @@ steps:
       from_secret: testing_aws_secret_access_key
   commands:
   - dapper -f Dockerfile.centos7.dapper ./policy/centos8/scripts/upload-repo
+  volumes:
+  - name: docker
+    path: /var/run/docker.sock
   when:
     instance:
     - drone-publish.k3s.io
@@ -208,6 +220,9 @@ steps:
       from_secret: testing_private_key_pass_phrase
   commands:
   - dapper -f Dockerfile.centos7.dapper ./policy/slemicro/scripts/sign
+  volumes:
+  - name: docker
+    path: /var/run/docker.sock
   when:
     instance:
     - drone-publish.k3s.io
@@ -234,6 +249,9 @@ steps:
       from_secret: testing_aws_secret_access_key
   commands:
   - dapper -f Dockerfile.centos7.dapper ./policy/slemicro/scripts/upload-repo
+  volumes:
+  - name: docker
+    path: /var/run/docker.sock
   when:
     instance:
     - drone-publish.k3s.io
@@ -299,6 +317,9 @@ steps:
       from_secret: testing_private_key_pass_phrase
   commands:
   - dapper -f Dockerfile.centos7.dapper ./policy/microos/scripts/sign
+  volumes:
+  - name: docker
+    path: /var/run/docker.sock
   when:
     instance:
     - drone-publish.k3s.io
@@ -325,6 +346,9 @@ steps:
       from_secret: testing_aws_secret_access_key
   commands:
   - dapper -f Dockerfile.centos7.dapper ./policy/microos/scripts/upload-repo
+  volumes:
+  - name: docker
+    path: /var/run/docker.sock
   when:
     instance:
     - drone-publish.k3s.io
@@ -390,6 +414,9 @@ steps:
       from_secret: testing_private_key_pass_phrase
   commands:
   - dapper -f Dockerfile.centos7.dapper ./policy/coreos/scripts/sign
+  volumes:
+  - name: docker
+    path: /var/run/docker.sock
   when:
     instance:
     - drone-publish.k3s.io
@@ -416,6 +443,9 @@ steps:
       from_secret: testing_aws_secret_access_key
   commands:
   - dapper -f Dockerfile.centos7.dapper ./policy/coreos/scripts/upload-repo
+  volumes:
+  - name: docker
+    path: /var/run/docker.sock
   when:
     instance:
     - drone-publish.k3s.io
@@ -480,6 +510,9 @@ steps:
       from_secret: testing_private_key_pass_phrase
   commands:
   - dapper -f Dockerfile.centos7.dapper ./policy/centos9/scripts/sign
+  volumes:
+  - name: docker
+    path: /var/run/docker.sock
   when:
     instance:
     - drone-publish.k3s.io
@@ -506,6 +539,9 @@ steps:
       from_secret: testing_aws_secret_access_key
   commands:
   - dapper -f Dockerfile.centos7.dapper ./policy/centos9/scripts/upload-repo
+  volumes:
+  - name: docker
+    path: /var/run/docker.sock
   when:
     instance:
     - drone-publish.k3s.io
