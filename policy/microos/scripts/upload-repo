@@ -6,7 +6,9 @@ pushd $(dirname $0)/..
 popd
 
 yum install -y epel-release
-yum install -y git python2-pip python-deltarpm
+yum install -y git python2-pip python-deltarpm ca-certificates
+export REQUESTS_CA_BUNDLE=/etc/pki/tls/certs/ca-bundle.crt
+
 pip install --cache-dir=/var/cache/pip --upgrade 'boto3==1.17.112' 'pip<21.0' 'setuptools<45.0'
 pip install --cache-dir=/var/cache/pip/ \
   git+https://github.com/Voronenko/rpm-s3.git@5695c6ad9a08548141d3713328e1bd3f533d137e
