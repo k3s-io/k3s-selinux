@@ -11,7 +11,7 @@
 /var/lib/rancher/k3s(/.*)?                                          gen_context(system_u:object_r:container_var_lib_t,s0)
 /var/lib/rancher/k3s/agent/containerd/[^/]*/snapshots           -d  gen_context(system_u:object_r:container_share_t,s0)
 /var/lib/rancher/k3s/agent/containerd/[^/]*/snapshots/[^/]*     -d  gen_context(system_u:object_r:container_share_t,s0)
-/var/lib/rancher/k3s/agent/containerd/[^/]*/snapshots/[^/]*/.*      <<none>>
+/var/lib/rancher/k3s/agent/containerd/.*/snapshots(/.*)?            gen_context(system_u:object_r:container_file_t,s0)
 /var/lib/rancher/k3s/agent/containerd/[^/]*/sandboxes(/.*)?         gen_context(system_u:object_r:container_share_t,s0)
 /var/lib/rancher/k3s/data(/.*)?                                     gen_context(system_u:object_r:k3s_data_t,s0)
 /var/lib/rancher/k3s/data/.lock                                 --  gen_context(system_u:object_r:k3s_lock_t,s0)
