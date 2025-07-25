@@ -26,7 +26,7 @@ Release:	%{k3s_selinux_release}.el7
 Summary:	SELinux policy module for k3s
 
 Group:	System Environment/Base
-License:	ASL 2.0
+License:	Apache-2.0
 URL:		https://k3s.io
 Source0:	k3s.pp
 Source1:	k3s.if
