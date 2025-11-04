@@ -22,6 +22,8 @@ Name:   k3s-selinux
 Version:	%{k3s_selinux_version}
 Release:	%{k3s_selinux_release}.slemicro
 Summary:	SELinux policy module for k3s
+Vendor:     SUSE LLC
+Packager:   SUSE LLC <https://www.suse.com/>
 
 Group:	System Environment/Base
 License:	Apache-2.0
