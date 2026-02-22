@@ -5,10 +5,18 @@ RUN find /etc/yum.repos.d -type f -name '*.repo' -exec \
 RUN yum install -y epel-release \
  && yum -y install container-selinux git rpm-build selinux-policy-devel yum-utils
 
-ENV DAPPER_SOURCE /source
-ENV DAPPER_OUTPUT ./dist
-ENV DAPPER_ENV COMBARCH DRONE_TAG TAG
-ENV HOME ${DAPPER_SOURCE}
-WORKDIR ${DAPPER_SOURCE}
+ENV SOURCE=/source
 
-ENTRYPOINT ["./policy/centos8/scripts/entry"]
+WORKDIR ${SOURCE}
+
+COPY . .
+
+ARG TAG
+ARG SCRIPT=build
+
+RUN ${SOURCE}/policy/centos8/scripts/entry "${SCRIPT}"
+
+FROM scratch AS result
+ENV SOURCE=/source
+
+COPY --from=build ${SOURCE}/dist /dist

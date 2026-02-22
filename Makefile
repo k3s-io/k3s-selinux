@@ -1,23 +1,29 @@
 UPLOAD_TARGETS := $(addprefix upload-,$(shell ls policy/))
 BUILD_TARGETS := $(addprefix build-,$(shell ls policy/))
 SIGN_TARGETS := $(addprefix sign-,$(shell ls policy/))
-.dapper:
-	@echo Downloading dapper
-	@curl -sL https://releases.rancher.com/dapper/latest/dapper-$$(uname -s)-$$(uname -m) > .dapper.tmp
-	@@chmod +x .dapper.tmp
-	@./.dapper.tmp -v
-	@mv .dapper.tmp .dapper
 
-$(BUILD_TARGETS): .dapper
-	./.dapper -f Dockerfile.$(@:build-%=%).dapper ./policy/$(@:build-%=%)/scripts/build
+$(BUILD_TARGETS):
+	docker buildx build \
+      --target result --output=. \
+      --build-arg "TAG=$(TAG)" \
+      --build-arg "SCRIPT=build" \
+			-f Dockerfile.$(@:build-%=%) .
 
-$(SIGN_TARGETS): .dapper
-	./.dapper -f Dockerfile.centos7.dapper ./policy/$(@:sign-%=%)/scripts/sign
+$(SIGN_TARGETS):
+	docker buildx build \
+      --target result --output=. \
+      --build-arg "TAG=$(TAG)" \
+      --build-arg "SCRIPT=sign" \
+			-f Dockerfile.$(@:sign-%=%) .
 
-$(UPLOAD_TARGETS): .dapper
-	./.dapper -f Dockerfile.centos7.dapper ./policy/$(@:upload-%=%)/scripts/upload-repo
+$(UPLOAD_TARGETS):
+	docker buildx build \
+      --target result --output=. \
+      --build-arg "TAG=$(TAG)" \
+      --build-arg "SCRIPT=upload" \
+			-f Dockerfile.$(@:upload-%=%) .
 
 clean:
-	rm -rf dist/ Dockerfile.*.dapper[0-9]*
+	rm -rf dist/
 
 .PHONY: $(UPLOAD_TARGETS) $(BUILD_TARGETS) $(SIGN_TARGETS) clean
