@@ -1,0 +1,20 @@
+FROM quay.io/centos/centos:stream9 AS build
+
+RUN yum install -y epel-release \
+ && yum -y install container-selinux git rpm-build selinux-policy-devel yum-utils pinentry python-pip ca-certificates
+
+ENV SOURCE=/source
+
+WORKDIR ${SOURCE}
+
+COPY . .
+
+ARG TAG
+ARG SCRIPT=build
+
+RUN ${SOURCE}/policy/centos9/scripts/entry "${SCRIPT}"
+
+FROM scratch AS result
+ENV SOURCE=/source
+
+COPY --from=build ${SOURCE}/dist /dist
