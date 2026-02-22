@@ -32,17 +32,17 @@ jobs:
       run: |
         make build-centos9
 
-  # build-rpm-el10:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #   - name: Checkout code
-  #     uses: actions/checkout@v4
-  #     with:
-  #       fetch-depth: 0
+  build-rpm-el10:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
 
-  #   - name: build-rpm
-  #     run: |
-  #       make build-centos10
+    - name: build-rpm
+      run: |
+        make build-centos10
 
   build-rpm-slemicro:
     runs-on: ubuntu-latest

@@ -1,0 +1,27 @@
+#######################################################################
+## <summary>
+##	Creates types and rules for a k3s runtime domain.
+## </summary>
+## <param name="prefix">
+##	<summary>
+##	Prefix for the domain.
+##	</summary>
+## </param>
+#
+template(`k3s_runtime_domain_template',`
+	gen_require(`
+		attribute container_runtime_domain, exec_type;
+		role system_r, sysadm_r;
+	')
+
+	attribute $1_domain;
+	type $1_t, $1_domain;
+	role system_r types $1_t;
+	role sysadm_r types $1_t;
+
+	can_exec($1_t, exec_type)
+	domain_type($1_t)
+	domain_entry_file($1_domain, $1_t)
+
+	admin_pattern(container_runtime_domain, $1_t)
+')
