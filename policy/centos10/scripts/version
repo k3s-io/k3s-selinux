@@ -3,6 +3,9 @@
 TREE_STATE=clean
 COMMIT=${COMMIT:-${DRONE_COMMIT:-${GITHUB_SHA:-unknown}}}
 TAG=${TAG:-$GITHUB_TAG}
+SOURCE=${SOURCE:-/source}
+
+git config --global --add safe.directory $SOURCE
 
 if [ -n "$(git status --porcelain --untracked-files=no)" ]; then
     DIRTY="dirty"
