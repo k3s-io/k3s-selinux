@@ -5,22 +5,22 @@ SIGN_TARGETS := $(addprefix sign-,$(shell ls policy/))
 $(BUILD_TARGETS):
 	docker buildx build \
       --target result --output=. \
-      --build-arg "TAG=$(TAG)" \
-      --build-arg "SCRIPT=build" \
+      --build-arg TAG=${TAG} \
+      --build-arg SCRIPT=build \
 			-f Dockerfile.$(@:build-%=%) .
 
 $(SIGN_TARGETS):
 	docker buildx build \
       --target result --output=. \
-      --build-arg "TAG=$(TAG)" \
-      --build-arg "SCRIPT=sign" \
+      --build-arg TAG=${TAG} \
+      --build-arg SCRIPT=sign \
 			-f Dockerfile.$(@:sign-%=%) .
 
 $(UPLOAD_TARGETS):
 	docker buildx build \
       --target result --output=. \
-      --build-arg "TAG=$(TAG)" \
-      --build-arg "SCRIPT=upload" \
+      --build-arg TAG=${TAG} \
+      --build-arg SCRIPT=upload \
 			-f Dockerfile.$(@:upload-%=%) .
 
 clean:

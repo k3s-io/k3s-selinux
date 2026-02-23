@@ -1,0 +1,81 @@
+name: Release
+on:
+  release:
+    types:
+      - published
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - "centos8"
+          - "centos9"
+          - "centos10"
+          - "microos"
+          - "slemicro"
+          - "coreos"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: "Read secrets"
+        uses: rancher-eio/read-vault-secrets@main
+        env:
+          GH_TOKEN: ${{ github.token }}
+        with:
+          secrets: |
+            secret/data/github/repo/${{ github.repository }}/private-key/credentials privateKey | PRIVATE_KEY ;
+            secret/data/github/repo/${{ github.repository }}/private-key-pass-phrase/credentials token | PRIVATE_KEY_PASS_PHRASE ;
+            secret/data/github/repo/${{ github.repository }}/testing-private-key/credentials privateKey | TESTING_PRIVATE_KEY ;
+            secret/data/github/repo/${{ github.repository }}/testing-private-key-pass-phrase/credentials token | TESTING_PRIVATE_KEY_PASS_PHRASE ;
+            secret/data/github/repo/${{ github.repository }}/aws-s3-bucket/credentials token | AWS_S3_BUCKET ;
+            secret/data/github/repo/${{ github.repository }}/aws-access-key-id/credentials token | AWS_ACCESS_KEY_ID ;
+            secret/data/github/repo/${{ github.repository }}/aws-secret-access-key/credentials token | AWS_SECRET_ACCESS_KEY ;
+            secret/data/github/repo/${{ github.repository }}/testing-aws-s3-bucket/credentials token | TESTING_AWS_S3_BUCKET ;
+            secret/data/github/repo/${{ github.repository }}/testing-aws-access-key-id/credentials token | TESTING_AWS_ACCESS_KEY_ID ;
+            secret/data/github/repo/${{ github.repository }}/testing-aws-secret-access-key/credentials token | TESTING_AWS_SECRET_ACCESS_KEY ;
+
+      - name: Build
+        env:
+          TAG: ${{ github.ref_name }}
+          AWS_S3_BUCKET: ${{ env.AWS_S3_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ env.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ env.AWS_SECRET_ACCESS_KEY }}
+          TESTING_AWS_S3_BUCKET: ${{ env.TESTING_AWS_S3_BUCKET }}
+          TESTING_AWS_ACCESS_KEY_ID: ${{ env.TESTING_AWS_ACCESS_KEY_ID }}
+          TESTING_AWS_SECRET_ACCESS_KEY: ${{ env.TESTING_AWS_SECRET_ACCESS_KEY }}
+        run: |
+          docker buildx build \
+            --target result --output=. \
+            --build-arg TAG="${TAG}" \
+            --build-arg SCRIPT=build \
+            -f Dockerfile.${{ matrix.os }} .
+
+      - name: Checksum
+        run: |
+          find dist/${{ matrix.os }}/noarch/*.rpm -type f | while read -r file; do
+            sha256sum "$file" | awk '{print $1 "  " $2}' >> "sha256sum-${{ matrix.os }}-noarch.txt"
+          done
+
+          find dist/${{ matrix.os }}/source/*.rpm -type f | while read -r file; do
+            sha256sum "$file" | awk '{print $1 "  " $2}' >> "sha256sum-${{ matrix.os }}-source.txt"
+          done
+
+      - name: Upload to GitHub
+        env:
+          GH_TOKEN: ${{ github.token }}
+          OS: ${{ matrix.os }}
+        run: |
+          gh release upload ${{ github.ref_name }} dist/${{ matrix.os }}/noarch/* dist/${{ matrix.os }}/source/*
