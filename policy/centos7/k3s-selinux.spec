@@ -7,13 +7,13 @@
         mkdir -p /var/lib/rancher/k3s/data; \
         mkdir -p /var/run/flannel; \
         mkdir -p /var/run/k3s; \
-        restorecon -FR -i /etc/systemd/system/k3s.service; \
-        restorecon -FR -i /usr/lib/systemd/system/k3s.service; \
-        restorecon -FR /var/lib/cni; \
-        restorecon -FR /var/lib/kubelet; \
-        restorecon -FR /var/lib/rancher; \
-        restorecon -FR /var/run/k3s; \
-        restorecon -FR /var/run/flannel
+        restorecon -R -i /etc/systemd/system/k3s.service; \
+        restorecon -R -i /usr/lib/systemd/system/k3s.service; \
+        restorecon -R /var/lib/cni; \
+        restorecon -R /var/lib/kubelet; \
+        restorecon -R /var/lib/rancher; \
+        restorecon -R /var/run/k3s; \
+        restorecon -R /var/run/flannel
 
 %define selinux_policyver 3.13.1-252
 %define container_policyver 2.107-3
