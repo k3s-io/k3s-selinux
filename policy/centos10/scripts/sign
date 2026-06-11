@@ -4,7 +4,7 @@ set -e -x
 yum install -y rpm-sign expect git
 
 pushd $(dirname $0)/..
-. ./scripts/version
+. ../../scripts/version
 popd
 
 cat <<\EOF >~/.rpmmacros 
