@@ -2,7 +2,7 @@
 set -e -x
 
 pushd $(dirname $0)/..
-. ./scripts/version
+. ../../scripts/version
 popd
 
 yum install -y epel-release
