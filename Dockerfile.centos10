@@ -1,7 +1,15 @@
-FROM almalinux:10 AS build
+FROM almalinux:10.0 AS build
 
-RUN yum install -y epel-release \
- && yum -y install container-selinux git rpm-build selinux-policy-devel yum-utils pinentry python-pip ca-certificates
+RUN yum -y --releasever=10.0 install \
+	container-selinux-4:2.235.0-2.el10_0 \
+	libsepol-devel-3.8-1.el10 \
+	policycoreutils-3.8-1.el10 \
+	policycoreutils-devel-3.8-1.el10 \
+	selinux-policy-devel-40.13.26-1.el10 \
+	git \
+	rpm-build \
+	yum-utils \
+	ca-certificates
 
 ENV SOURCE=/source
 
