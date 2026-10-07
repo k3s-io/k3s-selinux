@@ -38,7 +38,7 @@ BuildRequires: selinux-policy >= %{selinux_policyver}
 BuildRequires: selinux-policy-devel >= %{selinux_policyver}
 
 Requires: policycoreutils, selinux-tools
-Requires(post): selinux-policy-base >= %{selinux_policyver}, policycoreutils, container-selinux >= %{container_policyver}
+Requires(posttrans): selinux-policy-base >= %{selinux_policyver}, policycoreutils, container-selinux >= %{container_policyver}
 Requires(postun): policycoreutils
 
 Provides: %{name} = %{version}-%{release}
@@ -58,19 +58,19 @@ install -d %{buildroot}/etc/selinux/targeted/contexts/users/
 %pre
 %selinux_relabel_pre
 
-%post
-%selinux_modules_install %{_datadir}/selinux/packages/k3s.pp
-if /usr/sbin/selinuxenabled ; then
-    /usr/sbin/load_policy
-    %k3s_relabel_files
-fi;
-
 %postun
 if [ $1 -eq 0 ]; then
     %selinux_modules_uninstall k3s
 fi;
 
 %posttrans
+# container-selinux on SUSE loads the container module in its posttrans scriptlet,
+# so k3s.pp can only be installed after it when both are in the same transaction
+%selinux_modules_install %{_datadir}/selinux/packages/k3s.pp
+if /usr/sbin/selinuxenabled ; then
+    /usr/sbin/load_policy
+    %k3s_relabel_files
+fi;
 %selinux_relabel_post
 
 %files
