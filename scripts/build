@@ -14,7 +14,10 @@ DIST_DIR=${SOURCE}/dist/${POLICY}
 mkdir -p ${BUILD_DIR}
 cp ${POLICY_DIR}/k3s.te ${POLICY_DIR}/k3s.if ${POLICY_DIR}/k3s.fc ${POLICY_DIR}/k3s-selinux.spec ${BUILD_DIR}
 pushd ${BUILD_DIR}
-make -f /usr/share/selinux/devel/Makefile k3s.pp
+# MODULE_POLICY_VERSION pins the module format for targets with an older libsepol
+make -f /usr/share/selinux/devel/Makefile \
+    ${MODULE_POLICY_VERSION:+"CHECKMODULE=/usr/bin/checkmodule -M -c ${MODULE_POLICY_VERSION}"} \
+    k3s.pp
 popd
 
 rpmbuild \

@@ -20,7 +20,7 @@
 
 Name:   k3s-selinux
 Version:	%{k3s_selinux_version}
-Release:	%{k3s_selinux_release}.sle
+Release:	%{k3s_selinux_release}.microos
 Summary:	SELinux policy module for k3s
 Vendor:     K3s Project
 Packager:   K3s Project <https://k3s.io/>
