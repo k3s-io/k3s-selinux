@@ -111,4 +111,4 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           OS: ${{ matrix.os }}
         run: |
-          gh release upload ${{ github.ref_name }} dist/${{ matrix.os }}/noarch/* dist/${{ matrix.os }}/source/*
+          gh release upload ${{ github.ref_name }} dist/${{ matrix.os }}/noarch/* dist/${{ matrix.os }}/source/* sha256sum-${{ matrix.os }}-noarch.txt sha256sum-${{ matrix.os }}-source.txt

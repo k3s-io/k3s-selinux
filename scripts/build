@@ -1,0 +1,29 @@
+#!/bin/bash
+set -e -x
+
+POLICY=${POLICY:?POLICY must be set to one of the directories under policy/}
+BUILD_DIR=${BUILD_DIR:?BUILD_DIR must be set to the directory to build in}
+
+cd $(dirname $0)/..
+. ./scripts/version
+
+POLICY_DIR=${PWD}/policy/${POLICY}
+DIST_DIR=${SOURCE}/dist/${POLICY}
+
+# build out of tree so the policy directory only ever holds policy sources
+mkdir -p ${BUILD_DIR}
+cp ${POLICY_DIR}/k3s.te ${POLICY_DIR}/k3s.if ${POLICY_DIR}/k3s.fc ${POLICY_DIR}/k3s-selinux.spec ${BUILD_DIR}
+pushd ${BUILD_DIR}
+make -f /usr/share/selinux/devel/Makefile k3s.pp
+popd
+
+rpmbuild \
+    --define "k3s_selinux_version ${RPM_VERSION}" \
+    --define "k3s_selinux_release ${RPM_RELEASE}" \
+    --define "_sourcedir ${BUILD_DIR}" \
+    --define "_specdir ${BUILD_DIR}" \
+    --define "_builddir ${BUILD_DIR}" \
+    --define "_srcrpmdir ${DIST_DIR}/source" \
+    --define "_buildrootdir ${BUILD_DIR}/.build" \
+    --define "_rpmdir ${DIST_DIR}" \
+    -ba ${BUILD_DIR}/k3s-selinux.spec

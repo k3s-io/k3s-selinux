@@ -28,7 +28,9 @@ COPY . .
 ARG TAG
 ARG SCRIPT=build
 
-RUN ${SOURCE}/policy/slemicro/scripts/entry "${SCRIPT}"
+ENV POLICY=slemicro
+ENV BUILD_DIR=/build
+RUN ${SOURCE}/scripts/entry "${SCRIPT}"
 
 FROM scratch AS result
 ENV SOURCE=/source

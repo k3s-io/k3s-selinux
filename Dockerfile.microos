@@ -14,7 +14,9 @@ COPY . .
 ARG TAG
 ARG SCRIPT=build
 
-RUN ${SOURCE}/policy/microos/scripts/entry "${SCRIPT}"
+ENV POLICY=microos
+ENV BUILD_DIR=/build
+RUN ${SOURCE}/scripts/entry "${SCRIPT}"
 
 FROM scratch AS result
 ENV SOURCE=/source
