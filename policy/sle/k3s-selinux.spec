@@ -1,19 +1,26 @@
 # vim: sw=4:ts=4:et
 
 %define k3s_relabel_files() \
+        umask 0022; \
         mkdir -p /var/lib/cni; \
-        mkdir -p /var/lib/kubelet/pods; \
-        mkdir -p /var/lib/rancher/k3s/agent/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots; \
         mkdir -p /var/lib/rancher/k3s/data; \
         mkdir -p /var/run/flannel; \
+        umask 0027; \
+        mkdir -p /var/lib/kubelet/pods; \
+        umask 0066; \
         mkdir -p /var/run/k3s; \
-        restorecon -R -T 0 -i /etc/systemd/system/k3s.service; \
-        restorecon -R -T 0 -i /usr/lib/systemd/system/k3s.service; \
+        umask 0077; \
+        mkdir -p /var/lib/rancher/k3s/agent/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots; \
+        mkdir -p /var/lib/rancher/k3s/server; \
         restorecon -R -T 0 /var/lib/cni; \
         restorecon -R -T 0 /var/lib/kubelet; \
         restorecon -R -T 0 /var/lib/rancher; \
         restorecon -R -T 0 /var/run/k3s; \
-        restorecon -R -T 0 /var/run/flannel
+        restorecon -R -T 0 /var/run/flannel; \
+        if [ -z "${TRANSACTIONAL_UPDATE}" ]; then \
+            restorecon -R -T 0 -i /etc/systemd/system/k3s.service; \
+            restorecon -R -T 0 -i /usr/lib/systemd/system/k3s.service; \
+        fi
 
 %define selinux_policyver 20230523
 %define container_policyver 2.211.0
@@ -58,20 +65,22 @@ install -d %{buildroot}/etc/selinux/targeted/contexts/users/
 %pre
 %selinux_relabel_pre
 
-%post
-%selinux_modules_install %{_datadir}/selinux/packages/k3s.pp
-if /usr/sbin/selinuxenabled ; then
-    /usr/sbin/load_policy
-    %k3s_relabel_files
-fi;
-
 %postun
 if [ $1 -eq 0 ]; then
     %selinux_modules_uninstall k3s
 fi;
 
 %posttrans
+semodule -n -X 200 -i %{_datadir}/selinux/packages/k3s.pp
+if /usr/sbin/selinuxenabled ; then
+    if [ -z "${TRANSACTIONAL_UPDATE}" ]; then
+        /usr/sbin/load_policy
+    fi
+fi;
 %selinux_relabel_post
+if /usr/sbin/selinuxenabled ; then
+    %k3s_relabel_files
+fi;
 
 %files
 %attr(0600,root,root) %{_datadir}/selinux/packages/k3s.pp
