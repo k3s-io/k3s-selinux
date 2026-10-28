@@ -1,0 +1,24 @@
+ARG OPENSUSE=opensuse/leap:16.0
+FROM ${OPENSUSE} AS build
+
+RUN zypper install -y container-selinux git rpm-build selinux-policy-devel
+
+ENV SOURCE=/source
+
+WORKDIR ${SOURCE}
+
+COPY . .
+
+ARG TAG
+ARG SCRIPT=build
+
+# SL Micro 6.0/6.1 ship libsepol 3.5, which only reads policy modules up to version 21
+ENV MODULE_POLICY_VERSION=21
+ENV POLICY=sle
+ENV BUILD_DIR=/build
+RUN ${SOURCE}/scripts/entry "${SCRIPT}"
+
+FROM scratch AS result
+ENV SOURCE=/source
+
+COPY --from=build ${SOURCE}/dist /dist
