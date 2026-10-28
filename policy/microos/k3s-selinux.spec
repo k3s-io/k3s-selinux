@@ -1,12 +1,17 @@
 # vim: sw=4:ts=4:et
 
 %define k3s_relabel_files() \
+        umask 0022; \
         mkdir -p /var/lib/cni; \
-        mkdir -p /var/lib/kubelet/pods; \
-        mkdir -p /var/lib/rancher/k3s/agent/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots; \
         mkdir -p /var/lib/rancher/k3s/data; \
         mkdir -p /var/run/flannel; \
+        umask 0027; \
+        mkdir -p /var/lib/kubelet/pods; \
+        umask 0066; \
         mkdir -p /var/run/k3s; \
+        umask 0077; \
+        mkdir -p /var/lib/rancher/k3s/agent/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots; \
+        mkdir -p /var/lib/rancher/k3s/server; \
         restorecon -R -T 0 -i /etc/systemd/system/k3s.service; \
         restorecon -R -T 0 -i /usr/lib/systemd/system/k3s.service; \
         restorecon -R -T 0 /var/lib/cni; \
