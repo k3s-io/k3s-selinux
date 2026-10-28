@@ -20,7 +20,9 @@ COPY . .
 ARG TAG
 ARG SCRIPT=build
 
-RUN ${SOURCE}/policy/centos10/scripts/entry "${SCRIPT}"
+ENV POLICY=centos10
+ENV BUILD_DIR=/build
+RUN ${SOURCE}/scripts/entry "${SCRIPT}"
 
 FROM scratch AS result
 ENV SOURCE=/source
