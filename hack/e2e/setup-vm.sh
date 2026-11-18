@@ -123,6 +123,10 @@ EOF
     INSTALL_K3S_SKIP_SELINUX_RPM=true INSTALL_K3S_SKIP_START=true \
         INSTALL_K3S_VERSION="${INSTALL_K3S_VERSION}" sh /tmp/install.sh
     rm -f /tmp/install.sh
+    # With INSTALL_K3S_SKIP_SELINUX_RPM the installer does not label the binary either: it keeps the
+    # label of its download directory (user_tmp_t), which systemd cannot execute. Label it from the
+    # file context database, as users skipping the RPM have to.
+    restorecon -v /usr/local/bin/k3s
 
     # k3s is Type=notify: start returns once the apiserver is up and the kubeconfig written.
     # The unit has no start timeout, so bound it here to get diagnostics instead of a hung job.
@@ -237,8 +241,6 @@ function verifyFileContexts() {
     local data snapshots_type
     data=$(readlink -f ${K3S_DATA_DIR}/data/current) || fail "${K3S_DATA_DIR}/data/current does not exist"
 
-    # The installer labels the binary with chcon: reset it to check the file context database.
-    restorecon -v /usr/local/bin/k3s
     checkFileContext container_runtime_exec_t /usr/local/bin/k3s \
         "${data}"/bin/{containerd-shim-runc-v2,runc,cni}
     checkFileContext container_unit_file_t /etc/systemd/system/k3s.service
