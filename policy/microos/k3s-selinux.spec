@@ -63,20 +63,22 @@ install -d %{buildroot}/etc/selinux/targeted/contexts/users/
 %pre
 %selinux_relabel_pre
 
-%post
-%selinux_modules_install %{_datadir}/selinux/packages/k3s.pp
-if /usr/sbin/selinuxenabled ; then
-    /usr/sbin/load_policy
-    %k3s_relabel_files
-fi;
-
 %postun
 if [ $1 -eq 0 ]; then
     %selinux_modules_uninstall k3s
 fi;
 
 %posttrans
+semodule -n -X 200 -i %{_datadir}/selinux/packages/k3s.pp
+if /usr/sbin/selinuxenabled ; then
+    if [ -z "${TRANSACTIONAL_UPDATE}" ]; then
+        /usr/sbin/load_policy
+    fi
+fi;
 %selinux_relabel_post
+if /usr/sbin/selinuxenabled ; then
+    %k3s_relabel_files
+fi;
 
 %files
 %attr(0600,root,root) %{_datadir}/selinux/packages/k3s.pp
