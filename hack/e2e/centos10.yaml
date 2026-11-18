@@ -1,0 +1,9 @@
+images:
+# Keep this on the latest Rocky minor release: kernel-modules-extra must match the running kernel,
+# and the repositories ($releasever) only carry the kernels of the latest minor release.
+- location: "https://dl.rockylinux.org/pub/rocky/10.3/images/x86_64/Rocky-10-GenericCloud-Base-10.3-20261112.0.x86_64.qcow2"
+  arch: "x86_64"
+  digest: "sha256:68eae06d402c8b19e7dca06e85bdc43a3476089afa3ee20d93d0d43cf9871e9e"
+- location: "https://dl.rockylinux.org/pub/rocky/10.3/images/aarch64/Rocky-10-GenericCloud-Base-10.3-20261112.0.aarch64.qcow2"
+  arch: "aarch64"
+  digest: "sha256:a690512d4f0a9bb8dc0d17f2727ec561aa28d16055bf0cd33bd7ac80529d545c"

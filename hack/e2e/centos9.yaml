@@ -1,0 +1,7 @@
+images:
+- location: "https://dl.rockylinux.org/pub/rocky/9.9/images/x86_64/Rocky-9-GenericCloud-Base-9.9-20261112.0.x86_64.qcow2"
+  arch: "x86_64"
+  digest: "sha256:4f88f4209de50813d8054ab97309e7169a580206a0c4ea04f375d36c4846d50e"
+- location: "https://dl.rockylinux.org/pub/rocky/9.9/images/aarch64/Rocky-9-GenericCloud-Base-9.9-20261112.0.aarch64.qcow2"
+  arch: "aarch64"
+  digest: "sha256:5fe11a8bb45c1e7e8b51f4dd9bb21c7b79aef29dffcfa61b52b9a82ac1cd1c38"

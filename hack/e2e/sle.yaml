@@ -1,0 +1,14 @@
+images:
+# The sle policy targets SLES 16 and SL Micro 6.x, which require a SUSE registration:
+# test it on openSUSE Leap 16, the same base (SELinux enforcing by default, cloud-init).
+#
+# Pinned to a numbered build: the unversioned "-Cloud.qcow2" URL is replaced on
+# every rebuild, which breaks the digest check. Bump build and digest together
+# (digests: <location>.sha256) when openSUSE removes this build.
+- location: https://download.opensuse.org/distribution/leap/16.0/appliances/Leap-16.0-Minimal-VM.x86_64-Cloud-Build18.94.qcow2
+  arch: x86_64
+  digest: "sha256:8519e3c73acd783cbb4d6820bce0caa120221db19cdb1e039441d152b4479588"
+
+- location: https://download.opensuse.org/distribution/leap/16.0/appliances/Leap-16.0-Minimal-VM.aarch64-Cloud-Build18.94.qcow2
+  arch: aarch64
+  digest: "sha256:d18ee54fb378814a3a362597891059972ca71b0c4871fc40ba0e936dc914e8c2"
