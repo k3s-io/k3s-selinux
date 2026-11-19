@@ -32,6 +32,22 @@ function fail() {
     exit 1
 }
 
+# Checks that can run independently record their failures here instead of exiting, so a single run
+# reports every unexpected label and AVC denial. reportErrors fails the test at the end.
+ERRORS=()
+
+function addError() {
+    echo "ERROR: $*" >&2
+    ERRORS+=("$*")
+}
+
+function reportErrors() {
+    if [[ ${#ERRORS[@]} -gt 0 ]]; then
+        fail "${#ERRORS[@]} check(s) failed:"$'\n'"$(printf -- '- %s\n' "${ERRORS[@]}")"
+    fi
+    echo "All checks passed."
+}
+
 function isSUSE() {
     grep -qi "suse" /etc/os-release
 }
@@ -221,9 +237,13 @@ function checkFileContext() {
     local expected="$1"; shift
     local path ctx
     for path in "$@"; do
-        ctx=$(stat -c %C "${path}") || fail "${path} does not exist"
-        [[ "$(cut -d: -f3 <<<"${ctx}")" == "${expected}" ]] || fail "${path} is labeled ${ctx}, expected type ${expected}"
-        echo "file ${path}: ${expected}"
+        if ! ctx=$(stat -c %C "${path}"); then
+            addError "${path} does not exist"
+        elif [[ "$(cut -d: -f3 <<<"${ctx}")" != "${expected}" ]]; then
+            addError "${path} is labeled ${ctx}, expected type ${expected}"
+        else
+            echo "file ${path}: ${expected}"
+        fi
     done
 }
 
@@ -286,8 +306,11 @@ function verifyNoAVCs() {
     fi
 
     relevant=$(grep -E "${AVC_PATTERN}" <<<"${avcs}" || true)
-    [[ -z "${relevant}" ]] || fail "AVC denials involving K3s types:"$'\n'"${relevant}"
-    echo "No AVC denials involving K3s types."
+    if [[ -n "${relevant}" ]]; then
+        addError "AVC denials involving K3s types:"$'\n'"${relevant}"
+    else
+        echo "No AVC denials involving K3s types."
+    fi
 }
 
 function main() {
@@ -301,6 +324,7 @@ function main() {
     verifyFileContexts
     verifyEtcdSnapshot
     verifyNoAVCs
+    reportErrors
 }
 
 trap 'rc=$?; if [[ ${rc} -ne 0 ]]; then dumpDiagnostics; fi; exit ${rc}' EXIT
