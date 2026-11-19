@@ -1,0 +1,8 @@
+images:
+# No digest: Tumbleweed is rolling and only the latest snapshot is kept on the
+# mirror, so any pinned digest (or snapshot URL) breaks within days.
+- location: https://download.opensuse.org/tumbleweed/appliances/openSUSE-Tumbleweed-Minimal-VM.x86_64-Cloud.qcow2
+  arch: x86_64
+
+- location: https://download.opensuse.org/ports/aarch64/tumbleweed/appliances/openSUSE-Tumbleweed-Minimal-VM.aarch64-Cloud.qcow2
+  arch: aarch64

@@ -1,0 +1,72 @@
+name: E2E Tests
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'policy/**'
+      - 'Dockerfile.*'
+      - 'Makefile'
+      - 'scripts/**'
+      - 'hack/e2e/**'
+      - '.github/workflows/e2e.yml'
+  pull_request:
+    paths:
+      - 'policy/**'
+      - 'Dockerfile.*'
+      - 'Makefile'
+      - 'scripts/**'
+      - 'hack/e2e/**'
+      - '.github/workflows/e2e.yml'
+
+permissions:
+  contents: read
+
+env:
+  LIMA_VERSION: v2.1.0
+  LIMA_SHA256: 9e52c605790649aceac1f894eb2bb7cdb45897257faafb54ff30ce6a576bebfa
+  LIMA_GUESTAGENTS_SHA256: f77730b5295e03f4cb4bfb8eeb3661fdde6c592a33bae4a2a68cecc03a93da8a
+
+jobs:
+  e2e:
+    strategy:
+      fail-fast: false
+      matrix:
+        distro: [centos8, centos9, centos10, coreos, microos, sle]
+
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      # https://lima-vm.io/docs/examples/gha/
+      - name: Install QEMU
+        run: |
+          set -eux
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends ovmf qemu-system-x86 qemu-utils
+          sudo modprobe kvm
+          sudo chown $(whoami) /dev/kvm
+
+      - name: Install Lima
+        run: |
+          set -eux
+          LIMA_FILE="lima-${LIMA_VERSION:1}-$(uname -s)-$(uname -m).tar.gz"
+          AGENTS_FILE="lima-additional-guestagents-${LIMA_VERSION:1}-$(uname -s)-$(uname -m).tar.gz"
+
+          curl -fsSLO "https://github.com/lima-vm/lima/releases/download/${LIMA_VERSION}/${LIMA_FILE}"
+          curl -fsSLO "https://github.com/lima-vm/lima/releases/download/${LIMA_VERSION}/${AGENTS_FILE}"
+
+          echo "${LIMA_SHA256}  ${LIMA_FILE}" | sha256sum -c -
+          echo "${LIMA_GUESTAGENTS_SHA256}  ${AGENTS_FILE}" | sha256sum -c -
+
+          sudo tar Cxzvm /usr/local -f "${LIMA_FILE}"
+          sudo tar Cxzvm /usr/local -f "${AGENTS_FILE}"
+
+      - name: E2E ${{ matrix.distro }}
+        run: make e2e-${{ matrix.distro }}
