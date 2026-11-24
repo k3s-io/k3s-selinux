@@ -8,9 +8,6 @@
 
 set -euxo pipefail
 
-# Policy under test (directory under policy/), set by the Makefile.
-POLICY="${POLICY:?POLICY must be set to one of the directories under policy/}"
-
 # Override with: make e2e-<distro> INSTALL_K3S_VERSION=vX.Y.Z+k3sN
 INSTALL_K3S_VERSION="${INSTALL_K3S_VERSION:-v1.35.10+k3s1}"
 
@@ -113,7 +110,7 @@ function verifyPolicy() {
     semodule -l | awk '{print $1}' | grep -qx k3s || fail "k3s SELinux module not loaded"
 
     local t
-    for t in k3s_data_t k3s_lock_t k3s_root_t; do
+    for t in k3s_data_t k3s_lock_t k3s_root_t k3s_db_t; do
         seinfo -t "${t}" | grep -qw "${t}" || fail "SELinux type ${t} unknown"
     done
     echo "k3s-selinux ${installed} verified."
@@ -232,10 +229,18 @@ function checkProcessContext() {
     echo "process ${proc}: ${expected}"
 }
 
+# canonicalType TYPE: print the primary name of TYPE, which may be an alias. Labels always show the
+# primary name, e.g. container_share_t is an alias of container_ro_file_t in recent container-selinux.
+function canonicalType() {
+    local primary
+    primary=$(seinfo -t "$1" 2>/dev/null | awk '/^ +[a-z]/ {print $1; exit}')
+    echo "${primary:-$1}"
+}
+
 # checkFileContext EXPECTED_TYPE PATH...
 function checkFileContext() {
-    local expected="$1"; shift
-    local path ctx
+    local expected path ctx
+    expected=$(canonicalType "$1"); shift
     for path in "$@"; do
         if ! ctx=$(stat -c %C "${path}"); then
             addError "${path} does not exist"
@@ -258,33 +263,31 @@ function verifyProcessContexts() {
 
 function verifyFileContexts() {
     echo "> Verify file contexts"
-    local data snapshots_type
+    local data
     data=$(readlink -f ${K3S_DATA_DIR}/data/current) || fail "${K3S_DATA_DIR}/data/current does not exist"
 
     checkFileContext container_runtime_exec_t /usr/local/bin/k3s \
         "${data}"/bin/{containerd-shim-runc-v2,runc,cni}
     checkFileContext container_unit_file_t /etc/systemd/system/k3s.service
-    checkFileContext container_var_lib_t ${K3S_DATA_DIR} ${K3S_DATA_DIR}/server ${K3S_DATA_DIR}/server/db/etcd
+    checkFileContext container_var_lib_t ${K3S_DATA_DIR} ${K3S_DATA_DIR}/server
+    checkFileContext k3s_db_t ${K3S_DATA_DIR}/server/db ${K3S_DATA_DIR}/server/db/etcd
     checkFileContext k3s_data_t ${K3S_DATA_DIR}/data ${K3S_DATA_DIR}/data/cni "${data}" "${data}"/bin/{.links,.sha256sums}
     checkFileContext k3s_lock_t ${K3S_DATA_DIR}/data/.lock
     # bin/containerd, k3s-server, kubectl... are symlinks to this multicall binary.
     checkFileContext k3s_root_t "${data}"/bin "${data}"/bin/k3s
     checkFileContext container_config_t "${data}"/etc
 
-    # The sle policy labels the overlayfs snapshots container_share_t, the others container_file_t.
-    if [[ "${POLICY}" == "sle" ]]; then
-        snapshots_type=container_share_t
-    else
-        snapshots_type=container_file_t
-    fi
-    checkFileContext "${snapshots_type}" \
-        ${K3S_DATA_DIR}/agent/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots
+    # container-selinux names "snapshots" directories container_file_t when they are created, and
+    # restorecon does not reset this customizable type: the sle and slemicro file contexts
+    # (container_share_t) never apply.
+    checkFileContext container_file_t ${K3S_DATA_DIR}/agent/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots
     checkFileContext container_share_t ${K3S_DATA_DIR}/agent/containerd/io.containerd.grpc.v1.cri/sandboxes
     checkFileContext container_file_t ${K3S_DATA_DIR}/storage ${K3S_DATA_DIR}/storage/pvc-*_default_e2e{,/e2e}
     checkFileContext container_var_run_t /run/k3s /run/k3s/containerd
     checkFileContext container_log_t /var/log/pods /var/log/containers
-    checkFileContext container_var_lib_t /var/lib/kubelet
-    checkFileContext container_file_t /var/lib/kubelet/pods
+    # The spec scriptlets create /var/lib/kubelet/pods and restore it to its file context
+    # (container_var_lib_t), so the "pods" type transition to container_file_t does not apply.
+    checkFileContext container_var_lib_t /var/lib/kubelet /var/lib/kubelet/pods
 
     # Informational: list paths whose type differs from the file context database.
     restorecon -Rnv ${K3S_DATA_DIR} /var/lib/kubelet /run/k3s || true
@@ -293,7 +296,9 @@ function verifyFileContexts() {
 function verifyEtcdSnapshot() {
     echo "> Verify etcd snapshot"
     k3s etcd-snapshot save --name e2e
-    checkFileContext container_var_lib_t ${K3S_DATA_DIR}/server/db/snapshots ${K3S_DATA_DIR}/server/db/snapshots/e2e-*
+    # Created under server/db (k3s_db_t), so container-selinux's "snapshots" type transition to
+    # container_file_t does not apply.
+    checkFileContext k3s_db_t ${K3S_DATA_DIR}/server/db/snapshots ${K3S_DATA_DIR}/server/db/snapshots/e2e-*
 }
 
 function verifyNoAVCs() {

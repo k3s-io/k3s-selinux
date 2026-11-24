@@ -36,7 +36,7 @@ $(E2E_TARGETS): e2e-%:
 
 	limactl cp dist/$*/noarch/k3s-selinux-*.noarch.rpm $(VM):/tmp/k3s-selinux.rpm
 	limactl cp hack/e2e/setup-vm.sh $(VM):/tmp/setup-vm.sh
-	limactl shell $(VM) sudo POLICY=$* \
+	limactl shell $(VM) sudo \
 		$(if $(INSTALL_K3S_VERSION),INSTALL_K3S_VERSION=$(INSTALL_K3S_VERSION)) /tmp/setup-vm.sh
 
 	limactl delete -f $(VM)
